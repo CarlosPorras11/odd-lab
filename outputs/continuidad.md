@@ -1,6 +1,6 @@
 # Continuidad de odd-lab
 
-Actualizado el 24 de octubre de 2026. E-01 a E-03 implementadas y validadas; E-04 a E-07 pendientes. Este resumen permite retomar en otra conversación sin volver a decidir la arquitectura.
+Actualizado el 24 de octubre de 2026. E-01 a E-04 implementadas y validadas; E-05 a E-07 pendientes. Este resumen permite retomar en otra conversación sin volver a decidir la arquitectura.
 
 ## Punto de entrada
 
@@ -18,7 +18,7 @@ Primer escenario: uso individual en repositorios empresariales, preparado concep
 
 **Gentle-AI y Engram están excluidos de la arquitectura.** Que existan instalados en la máquina no los convierte en dependencias. No desinstalarlos ni cambiar su configuración como parte de este trabajo.
 
-Carlos pidió guardar el plan, preparar el contexto e implementar E-01/E-02; después autorizó continuar con E-03. Las tres están implementadas y validadas, sin comenzar E-04 ni conectar un runtime. La preparación está en [preparación de implementación](preparacion-implementacion.md) y los resultados en [validación E-01](validacion-e01.md), [validación E-02](validacion-e02.md) y [validación E-03](validacion-e03.md).
+Carlos pidió implementar por entregas E-01 a E-04. Las cuatro están implementadas y validadas; E-04 solo utiliza el simulador local compilado. No se ha comenzado E-05 ni conectado un proveedor real. La preparación está en [preparación de implementación](preparacion-implementacion.md) y los resultados en [validación E-01](validacion-e01.md), [validación E-02](validacion-e02.md), [validación E-03](validacion-e03.md) y [validación E-04](validacion-e04.md).
 
 ## Decisiones cerradas
 
@@ -32,7 +32,7 @@ Carlos pidió guardar el plan, preparar el contexto e implementar E-01/E-02; des
 | Tipo de motor | Runtime completo; no construir de inicio un bucle propio de inferencia por API |
 | Primera integración propuesta | Codex App Server por stdio desde un adaptador Java |
 | Coordinación global | Propia: tareas, dependencias, permisos exigidos, decisiones y evidencia |
-| Memoria/registro | Propios; registro SQLite local implementado en E-03; verificación de artefactos y conocimiento avanzado pendientes |
+| Memoria/registro | Propios; registro SQLite local implementado en E-03; verificación de artefactos de simulación en E-04; conocimiento avanzado pendiente |
 | Forma inicial | Aplicación local para un usuario, ejecución en primer plano |
 | Nombre y paquete de trabajo | `odd-lab`, paquete provisional `dev.oddlab` |
 
@@ -66,16 +66,16 @@ Comandos previstos: `init`, `run`, `status`, `inspect`, `pause`, `resume`, `canc
 
 Se exige repositorio explícito en las operaciones de proyecto. `run` recibe un archivo de petición. `status` e `inspect` son consultivos y no invocan IA. En modo JSON no se pregunta ni se autoriza automáticamente: una decisión pendiente detiene de forma segura o requiere reconciliación.
 
-La especificación detallada de sintaxis, formato de salida, códigos, datos de `init` y ciclo de procesos está en [estructura y CLI](estructura-y-cli.md). Existen raíz con ayuda/versión y comandos `init`, `doctor`, `status`, `inspect`, con `--repo` obligatorio y salida `--json`. Las consultas son de solo lectura. `run`/`resume` y control de procesos siguen pendientes. Descriptor y política v1 en [configuración y diagnóstico](configuracion-y-diagnostico.md).
+La especificación detallada de sintaxis, formato de salida, códigos, datos de `init` y ciclo de procesos está en [estructura y CLI](estructura-y-cli.md). Existen raíz con ayuda/versión y comandos `init`, `doctor`, `status`, `inspect`, `run`, `resume`, con `--repo` obligatorio y salida `--json`. Las consultas son de solo lectura. `run` exige `--runtime simulated`; control de procesos y proveedores reales pendientes. Descriptor y política v1 en [configuración y diagnóstico](configuracion-y-diagnostico.md).
 
 ## Estado real observado al guardar
 
-- Hay documentación de diseño, continuidad, preparación, contratos E-02/E-03 y validaciones E-01 a E-03.
+- Hay documentación de diseño, continuidad, preparación, contratos E-02/E-03/E-04 y validaciones E-01 a E-04.
 - Hay archivos de IntelliJ `.idea` y metadatos de macOS; preservarlos salvo petición posterior.
-- Existen POM, Wrapper Unix/Windows y capacidades `bootstrap`, `cli`, `policy`, `workspace`, `work` y `memory`, con dominio y aplicación independientes de Spring/Picocli. Adaptadores locales para Git, archivos, YAML y SQLite; sin capas vacías.
+- Existen POM, Wrapper Unix/Windows y capacidades `bootstrap`, `cli`, `policy`, `workspace`, `work`, `memory`, `runtime`, `orchestration` y `verification`, con dominio y aplicación independientes de Spring/Picocli. Adaptadores locales para Git, archivos, YAML y SQLite; sin capas vacías.
 - Repositorio Git local inicializado en `main` por petición de Carlos. La documentación se versiona junto al `.gitignore`; consultar el historial al retomar.
-- `clean verify` con Wrapper Maven 3.9.16 y Temurin 25.0.2: 46 pruebas de composición/configuración/SQLite y 45 de integración del JAR, todas superadas (91). Resultado: `target/odd-lab-0.1.0-SNAPSHOT.jar`.
-- Existe adaptador de registro transaccional, creado por `init`. Las pruebas usan repositorios temporales sin inicializar este proyecto automáticamente. No hay runtime conectado ni memoria semántica.
+- `clean verify` con Wrapper Maven 3.9.16 y Temurin 25.0.2: 73 pruebas de núcleo y 56 de integración del JAR, todas superadas (129). Resultado: `target/odd-lab-0.1.0-SNAPSHOT.jar`.
+- Existe adaptador de registro transaccional, creado por `init`. Las pruebas usan repositorios temporales sin inicializar este proyecto automáticamente. Solo existe el runtime simulado, sin IA ni proveedores conectados; memoria semántica pendiente.
 - Se han descargado Maven y dependencias de construcción en cachés locales. No se han cambiado instalaciones ni preferencias globales; Windows no probado.
 
 Las versiones locales observadas anteriormente fueron Codex CLI `0.163.0-alpha.11.2`, Gentle-AI `3.7.0` y Engram `1.15.0`. Son un inventario histórico, no una dependencia ni confirmación de estado actual.
@@ -85,12 +85,12 @@ Las versiones locales observadas anteriormente fueron Codex CLI `0.163.0-alpha.1
 - [x] **E-01:** esqueleto Maven, Java 25, composición Spring Boot y raíz Picocli con ayuda y versión. Validada; véase [evidencia](validacion-e01.md).
 - [x] **E-02:** configuración del repositorio, política inicial, `init` y `doctor`; salida humana/JSON. [Evidencia](validacion-e02.md).
 - [x] **E-03:** almacenamiento transaccional propio, estados y consultas `status`/`inspect`. [Evidencia](validacion-e03.md).
-- [ ] **E-04:** `run` y `resume` con runtime simulado, evidencia y decisiones pendientes.
+- [x] **E-04:** `run`/`resume` con runtime simulado explícito, artefactos verificados, presupuesto y decisiones pendientes. [Evidencia](validacion-e04.md).
 - [ ] **E-05:** control de procesos, pausa/cancelación, propiedad y recuperación tras caída.
 - [ ] **E-06:** adaptador Codex y pruebas reales de protocolo, capacidades e aislamiento.
 - [ ] **E-07:** verificación integrada y comparación del piloto CSV.
 
-E-01 mantiene ayuda y versión sin repositorio ni runtime. E-02 añade inicialización idempotente, preservación de descriptor/archivos y diagnóstico de solo lectura. E-03 aporta registro transaccional, estados, consultas y diagnóstico SQLite. Siguiente entrega: E-04, `run` y `resume` con runtime simulado; todavía no implementada.
+E-01 mantiene ayuda y versión sin repositorio ni runtime. E-02 añade inicialización idempotente, preservación de descriptor/archivos y diagnóstico de solo lectura. E-03 aporta registro transaccional, estados, consultas y diagnóstico SQLite. E-04 aporta ese circuito simulado con evidencia y decisiones. Siguiente entrega: E-05, propiedad, pausa/cancelación y recuperación; todavía no implementada.
 
 Maven 3.9.16 y Wrapper 3.3.4 están generados y validados con Temurin 25.0.2. Pendientes técnicos por entrega: actualización/distribución empresarial del JDK 25, futuras migraciones de esquema, autenticación de Codex y detalles efectivos de sandbox. Consultar fuentes oficiales actuales antes de fijar dependencias; conservar las versiones ya elegidas salvo incompatibilidad demostrada y explicada.
 
@@ -104,15 +104,27 @@ Atención al JDK: `java` resuelve OpenJDK 26.0.1, mientras `mvn -version` usa Ja
 
 Descriptor `.odd-lab.yaml` v1 con identidad UUID y política v1, inicialmente sin proveedores ni red. Límites del piloto: máximo 2 subagentes y 2 correcciones; publicación y cambios en sistemas externos reservados al usuario. Configuración YAML estricta, sin campos desconocidos, secretos ni migración automática. YAML/JSON mediante SnakeYAML 2.6 y Jackson 3.1.7 gestionados por Boot.
 
-`init` valida antes de preparar directorios y exclusiones Git; no sustituye descriptor válido ni borra obstáculos. Repetirlo repara layout/exclusiones incompletos. `doctor` no escribe, no repara ni inicia IA. En E-02 informaba de almacenamiento `NOT_IMPLEMENTED`; E-03 lo sustituye por comprobación real del registro. El runtime sigue `NOT_CONFIGURED`. Una preparación sana no acredita ejecución de agentes. La inicialización no es una transacción de varios archivos ni un mecanismo de aislamiento frente a cambios hostiles concurrentes. Contrato detallado en [configuración y diagnóstico](configuracion-y-diagnostico.md).
+`init` valida antes de preparar directorios y exclusiones Git; no sustituye descriptor válido ni borra obstáculos. Repetirlo repara layout/exclusiones incompletos. `doctor` no escribe, no repara ni inicia IA. En E-02 informaba de almacenamiento `NOT_IMPLEMENTED`; E-03 lo sustituye por comprobación real del registro. Doctor añade `SIMULATION: AVAILABLE`; los proveedores reales siguen `RUNTIME: NOT_CONFIGURED`. Una preparación sana no acredita ejecución de agentes. La inicialización no es una transacción de varios archivos ni un mecanismo de aislamiento frente a cambios hostiles concurrentes. Contrato detallado en [configuración y diagnóstico](configuracion-y-diagnostico.md).
 
 ## Contrato y límites de E-03
 
 Registro en `.odd-lab/state/journal.sqlite`, SQLite JDBC 3.53.4.0 y migración SQL v1 con checksum y UUID de repositorio. `init` lo crea también para proyectos E-02; consultas y doctor no migran ni crean datos. Conservar descriptor y repetir `init` es la ruta de actualización local.
 
-Puerto `RunJournal` independiente de JDBC: creación `CREATED` v0, cambio de estado con versión esperada y entradas inmutables de requisitos/tareas/decisiones/evidencia. Estado, entrada y evento correspondiente se guardan en una transacción; fallos de evento provocan rollback. La inspección valida hash de petición y coherencia de versiones/estados/entradas/eventos. No permite afirmar `COMPLETED`, `PAUSED` ni `CANCELLED` sin los futuros casos de uso de verificación/detención.
+Puerto `RunJournal` independiente de JDBC: creación `CREATED` v0, cambio de estado con versión esperada y entradas inmutables de requisitos/tareas/decisiones/evidencia. Estado, entrada y evento correspondiente se guardan en una transacción; fallos de evento provocan rollback. La inspección valida hash de petición y coherencia de versiones/estados/entradas/eventos. Las transiciones genéricas no afirman `COMPLETED`, `PAUSED` ni `CANCELLED`. E-04 añade `completeSimulation` para aceptación sintética verificada; detención de procesos sigue en E-05.
 
-`status` lista o consulta estado; `inspect` muestra petición, instantánea de política, entradas y eventos. Consultar un `FAILED` devuelve 0 si la consulta es correcta. Proyecto nuevo: lista vacía; aún no hay comando público para crear ejecuciones. Los registros poblados se verifican con fixtures sintéticos. N-05/N-09 solo tienen cobertura parcial del registro; no se declaran completos ni se acredita memoria semántica. Contrato completo en [registro y consultas](registro-y-consultas.md).
+`status` lista o consulta estado; `inspect` muestra petición, instantánea de política, entradas y eventos. Consultar un `FAILED` devuelve 0 si la consulta es correcta. Proyecto nuevo: lista vacía; E-04 permite registrar simulaciones mediante `run`. Los registros iniciales de E-03 se verificaron con fixtures sintéticos. N-05/N-09 solo tienen cobertura parcial del registro; no se declaran completos ni se acredita memoria semántica. Contrato completo en [registro y consultas](registro-y-consultas.md).
+
+## Contrato y límites de E-04
+
+`run --repo <ruta> --request-file <archivo> --runtime simulated` conserva la petición literal y ejecuta un encargo mecánico. `COMPLETED` valida un recibo de simulación, no la implementación de esa petición. Escenarios: success, retry, failure, unverified, decision y permission. Una tarea directa, sin subagentes, con uno inicial más hasta dos intentos de corrección según la política capturada.
+
+Intentos, resultados y decisiones se registran como entradas inmutables. Entrada y transición se guardan juntos con versión esperada; completar exige evidencia de recibo/informe, petición y revisión. Se conserva la migración SQL v1 sin cambios. Artefactos se publican desde temporales, con hash y sin reemplazar archivos previos.
+
+`decision` termina en WAITING_INPUT/3 sin invocar el runtime. JSON nunca pregunta ni autoriza; `resume` interactivo recoge s/n y vincula respuesta a decisión/versión/revisión. Revisión cambiada, copia de petición alterada, cierre desconocido o estado activo impiden repetir ciegamente. Las peticiones fuera del encargo se deniegan y registran.
+
+`status`/`inspect` añaden verificación actual VALID/STALE/INVALID/NOT_VERIFIED y decisiones pendientes, conservando estado histórico y solo lectura. La huella cubre HEAD y archivos de trabajo, incluyendo siempre el descriptor. Vistas Markdown se regeneran con versión desde SQLite al ejecutar/reanudar; no son fuente de estado. Contrato: [ejecución simulada](ejecucion-simulada.md).
+
+Pendiente: propiedad de coordinador con recuperación, control de procesos, proveedor real, sandbox y piloto CSV. Los ensayos actuales no acreditan esas garantías.
 
 ## Piloto previsto
 
@@ -132,4 +144,4 @@ Este resumen orienta; los documentos detallan los contratos. Si el usuario cambi
 
 ## Texto para retomar en otra conversación
 
-> Trabaja en `/Users/carlos/dev/01-proyectos/odd-lab`. Lee `AGENTS.md`, `outputs/continuidad.md`, `outputs/registro-y-consultas.md` y los contratos de la entrega. E-01 a E-03 están implementadas y validadas. Continúa con E-04: `run` y `resume` con runtime simulado, evidencia y decisiones pendientes. Comprueba antes el estado real. Mantén Java 25, Spring Boot 4.1.2, Picocli 4.7.7 y coordinación/memoria propias; sin Gentle-AI ni Engram. No conectes un proveedor real ni amplíes a E-05. Actualiza estado y evidencia al terminar.
+> Trabaja en `/Users/carlos/dev/01-proyectos/odd-lab`. Lee `AGENTS.md`, `outputs/continuidad.md`, `outputs/ejecucion-simulada.md` y contratos de la entrega. E-01 a E-04 están implementadas y validadas. Continúa con E-05: propiedad de ejecución, solicitudes de pausa/cancelación y recuperación tras caída, con ensayos reales de procesos locales. Comprueba antes el estado actual. Mantén Java 25, Spring Boot 4.1.2, Picocli 4.7.7 y núcleo propio; sin Gentle-AI ni Engram. No conectes Codex/proveedor real ni amplíes a E-06. Actualiza estado y evidencia al terminar.

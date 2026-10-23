@@ -19,7 +19,7 @@ public final class CommandOutput {
                 if (map.containsKey("state")) envelope.put("state", map.get("state"));
             }
             envelope.put("result", result);
-            envelope.put("pendingDecision", null);
+            envelope.put("pendingDecision", result instanceof Map<?, ?> map ? map.get("pendingDecision") : null);
             envelope.put("error", errorCode == null ? null : Map.of("code", errorCode, "message", humanMessage));
             command.getOut().println(json.writeValueAsString(envelope));
         } else if (exitCode == 0) {

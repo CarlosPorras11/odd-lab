@@ -171,7 +171,7 @@ public final class LocalProjectAccess implements ProjectAccess {
     }
 
     private GitResult git(Path root, String... arguments) {
-        var command = new ArrayList<>(List.of("git", "-C", root.toString()));
+        var command = new ArrayList<>(List.of("git", "-C", root.toString(), "-c", "core.fsmonitor=false", "-c", "core.untrackedCache=false"));
         command.addAll(List.of(arguments));
         var builder = new ProcessBuilder(command).redirectError(ProcessBuilder.Redirect.DISCARD);
         builder.environment().keySet().removeIf(key -> key.startsWith("GIT_"));

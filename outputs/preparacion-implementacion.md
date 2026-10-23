@@ -1,6 +1,6 @@
 # Preparación de implementación de ODD
 
-23 de octubre de 2026. Contexto vigente recogido; E-01 a E-03 implementadas y validadas. E-04 a E-07 pendientes. Esta preparación concreta el arranque, sin sustituir los contratos existentes.
+23 de octubre de 2026. Contexto vigente recogido; E-01 a E-04 implementadas y validadas. E-05 a E-07 pendientes. Esta preparación concreta el arranque, sin sustituir los contratos existentes.
 
 ## 1. Orden de lectura y autoridad
 
@@ -108,6 +108,7 @@ Configuración y JSON resueltos en E-02. E-03 concreta SQLite y migración v1. P
 - [x] Implementar y validar E-01; 13 pruebas superadas y JAR ejecutable comprobado.
 - [x] Implementar y validar E-02; contrato en [configuración y diagnóstico](configuracion-y-diagnostico.md).
 - [x] Implementar y validar E-03; contrato en [registro y consultas](registro-y-consultas.md).
-- [ ] Implementar y validar E-04 a E-07, de forma incremental.
+- [x] Implementar y validar E-04; contrato en [ejecución simulada](ejecucion-simulada.md).
+- [ ] Implementar y validar E-05 a E-07, de forma incremental.
 
-Siguiente trabajo: E-04, `run` y `resume` con runtime simulado. E-03 acredita registro transaccional y consultas; no acredita ejecución de agentes, coordinación de procesos, integración con un runtime ni ejecución en Windows.
+Siguiente trabajo: E-05, propiedad de ejecución, pausa/cancelación y recuperación. E-04 acredita mecánica local de simulación, evidencia y decisiones; no acredita proveedores reales, control de procesos ni ejecución en Windows.

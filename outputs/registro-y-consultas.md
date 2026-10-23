@@ -1,6 +1,6 @@
 # Registro transaccional y consultas — E-03
 
-24 de octubre de 2026. Implementación local sin runtime ni ejecución de peticiones. Amplía [configuración E-02](configuracion-y-diagnostico.md) y [contratos](contratos-sistema.md).
+Contrato histórico de E-03, 24 de octubre de 2026. E-04 amplía el registro con `run`/`resume` simulados, evidencia verificada y estados de aceptación; véase [ejecución simulada](ejecucion-simulada.md). Las referencias siguientes a casos de uso pendientes describen E-03. Implementación local inicial sin runtime ni ejecución de peticiones. Amplía [configuración E-02](configuracion-y-diagnostico.md) y [contratos](contratos-sistema.md).
 
 ## Uso público
 

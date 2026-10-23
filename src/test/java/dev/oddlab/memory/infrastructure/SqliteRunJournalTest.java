@@ -233,6 +233,45 @@ class SqliteRunJournalTest {
                 RepositoryPolicy.initial(), RunState.CREATED, 0, now, now);
     }
 
+    @Test
+    void decisionAndStateRollBackTogetherWhenStateEventFails() throws Exception {
+        journal.initialize(repository, repositoryId);
+        var run = run();
+        journal.create(repository, run);
+        journal.transition(repository, repositoryId, run.runId(), 0, RunState.EXPLORING, "test", "Explorar");
+        var before = journal.inspect(repository, repositoryId, run.runId());
+        sql("CREATE TRIGGER fail_state BEFORE INSERT ON run_events WHEN NEW.type = 'STATE_CHANGED' BEGIN SELECT RAISE(ABORT, 'synthetic'); END");
+        var decision = new RunEntry(UUID.randomUUID(), RunEntry.Kind.DECISION, 1, "Pendiente", Map.of("status", "PENDING"));
+        assertError(() -> journal.appendAndTransition(repository, repositoryId, run.runId(), 1, decision, RunState.WAITING_INPUT, "test", "Esperar"), "STORAGE_FAILURE");
+        assertThat(journal.inspect(repository, repositoryId, run.runId())).isEqualTo(before);
+    }
+
+    @Test
+    void completionNeedsScopedProofAndRollsBackEvidenceIfFinalEventFails() throws Exception {
+        journal.initialize(repository, repositoryId);
+        var run = run();
+        journal.create(repository, run);
+        journal.append(repository, repositoryId, run.runId(), 0, new RunEntry(UUID.randomUUID(), RunEntry.Kind.REQUIREMENT, 1,
+                "Criterio", Map.of("criterion", "SIMULATED_RECEIPT")), "test");
+        UUID task = UUID.randomUUID();
+        journal.append(repository, repositoryId, run.runId(), 1, new RunEntry(task, RunEntry.Kind.TASK, 1, "Tarea", Map.of("recordType", "TASK")), "test");
+        long version = 2;
+        for (RunState state : List.of(RunState.EXPLORING, RunState.READY, RunState.RUNNING, RunState.VERIFYING)) {
+            journal.transition(repository, repositoryId, run.runId(), version++, state, "test", "Preparar fixture");
+        }
+        var before = journal.inspect(repository, repositoryId, run.runId());
+        var data = new java.util.HashMap<>(Map.of("location", "artifacts/receipt.json", "sha256", "b".repeat(64),
+                "revision", run.baseRevision(), "scope", "SIMULATION", "verified", "false", "requestSha256", run.requestSha256(), "taskId", task.toString()));
+        long expected = version;
+        assertError(() -> journal.completeSimulation(repository, repositoryId, run.runId(), expected,
+                new RunEntry(UUID.randomUUID(), RunEntry.Kind.EVIDENCE, 1, "Sin prueba", data), "test"), "STATE_PROOF_REQUIRED");
+        data.put("verified", "true");
+        sql("CREATE TRIGGER fail_complete BEFORE INSERT ON run_events WHEN NEW.state = 'COMPLETED' BEGIN SELECT RAISE(ABORT, 'synthetic'); END");
+        assertError(() -> journal.completeSimulation(repository, repositoryId, run.runId(), expected,
+                new RunEntry(UUID.randomUUID(), RunEntry.Kind.EVIDENCE, 1, "Prueba sintética", data), "test"), "STORAGE_FAILURE");
+        assertThat(journal.inspect(repository, repositoryId, run.runId())).isEqualTo(before);
+    }
+
     private RunEntry entry() {
         return new RunEntry(UUID.randomUUID(), RunEntry.Kind.REQUIREMENT, 1, "R-01", Map.of("text", "Preservar requisitos"));
     }

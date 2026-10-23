@@ -2,9 +2,9 @@
 
 Sistema propio de agentes y subagentes para desarrollo de software, inspirado en Organic Driven Development de Gentleman Programming.
 
-**Estado:** E-01 a E-03 implementadas y validadas: construcción, configuración/política, registro transaccional SQLite y comandos `init`, `doctor`, `status`, `inspect` con salida humana o JSON. E-04 a E-07 pendientes. Java 25, Spring Boot 4.1.2 y Picocli 4.7.7. Ejecución de agentes y runtime todavía pendientes.
+**Estado:** E-01 a E-04 implementadas y validadas: construcción, configuración, SQLite, consultas y `run`/`resume` con runtime simulado, evidencia y decisiones pendientes. E-05 a E-07 pendientes. Java 25, Spring Boot 4.1.2 y Picocli 4.7.7. Sin proveedores reales ni ejecución de código solicitada por agentes.
 
-Para retomar el proyecto en otra conversación, leer primero [continuidad y plan resumido](outputs/continuidad.md). Incluye decisiones, estado comprobado y siguiente entrega: E-04.
+Para retomar el proyecto en otra conversación, leer primero [continuidad y plan resumido](outputs/continuidad.md). Incluye decisiones, estado comprobado y siguiente entrega: E-05.
 
 Documentación: [arquitectura](outputs/sistema-agentes-odd.md), [decisiones](outputs/decisiones-entorno-odd.md), [contratos](outputs/contratos-sistema.md), [estructura y CLI](outputs/estructura-y-cli.md) y [piloto](outputs/piloto-odd.md).
 
@@ -24,9 +24,9 @@ java -jar target/odd-lab-0.1.0-SNAPSHOT.jar --version
 
 En otros equipos, ajustar `JAVA_HOME` al JDK 25 local. Windows dispone de `mvnw.cmd`; no se ha ejecutado en Windows.
 
-Sin argumentos, el JAR muestra ayuda. Ayuda y versión devuelven 0; argumentos desconocidos devuelven 2 y diagnóstico por stderr. No requieren repositorio ni crean estado. Están disponibles `init`, `doctor`, `status` e `inspect`; crear y ejecutar peticiones mediante `run` sigue pendiente.
+Sin argumentos, el JAR muestra ayuda. Ayuda y versión devuelven 0; argumentos desconocidos devuelven 2 y diagnóstico por stderr. No requieren repositorio ni crean estado. Están disponibles `init`, `doctor`, `status`, `inspect`, `run` y `resume`; estos dos últimos solo admiten simulación explícita, sin IA.
 
-`clean verify` ejecuta 46 pruebas de composición/configuración/SQLite y 45 de integración sobre el JAR empaquetado: **91 pruebas**. Evidencia y límites: [validación E-01](outputs/validacion-e01.md), [validación E-02](outputs/validacion-e02.md) y [validación E-03](outputs/validacion-e03.md).
+`clean verify` ejecuta 73 pruebas de núcleo y 56 de integración sobre el JAR empaquetado: **129 pruebas**. Evidencia y límites: [validación E-01](outputs/validacion-e01.md), [validación E-02](outputs/validacion-e02.md), [validación E-03](outputs/validacion-e03.md) y [validación E-04](outputs/validacion-e04.md).
 
 ## Preparar y comprobar un repositorio
 
@@ -39,7 +39,7 @@ java -jar target/odd-lab-0.1.0-SNAPSHOT.jar doctor --repo /ruta/al/repositorio -
 
 `init` crea `.odd-lab.yaml`, prepara cuatro directorios operativos y el registro SQLite v1, y añade exclusiones específicas a `.gitignore`, conservando su contenido. Repetirlo conserva identidad y política existentes. `doctor` comprueba la preparación sin modificar archivos ni iniciar IA. La política inicial no habilita proveedores ni red.
 
-En ambos comandos, `--repo` es obligatorio y `--json` devuelve un objeto final, incluidos errores de uso/configuración. Doctor comprueba el registro SQLite en solo lectura; el runtime sigue como `NOT_CONFIGURED`. Un diagnóstico correcto no significa que exista ejecución de agentes. Formato, códigos y límites: [configuración y diagnóstico](outputs/configuracion-y-diagnostico.md).
+En ambos comandos, `--repo` es obligatorio y `--json` devuelve un objeto final, incluidos errores de uso/configuración. Doctor comprueba el registro SQLite en solo lectura; el simulador aparece disponible y los proveedores reales siguen como `NOT_CONFIGURED`. Un diagnóstico correcto no significa que exista ejecución de agentes. Formato, códigos y límites: [configuración y diagnóstico](outputs/configuracion-y-diagnostico.md).
 
 ## Consultar el registro
 
@@ -48,4 +48,16 @@ java -jar target/odd-lab-0.1.0-SNAPSHOT.jar status --repo /ruta/al/repositorio -
 java -jar target/odd-lab-0.1.0-SNAPSHOT.jar inspect --repo /ruta/al/repositorio --run UUID --json
 ```
 
-Un proyecto nuevo muestra lista vacía. Para un proyecto preparado con E-02, repetir `init` crea la base que falta conservando su identidad. Las consultas no inicializan ni migran datos. La creación de ejecuciones mediante `run` llegará en E-04; las pruebas actuales usan registros sintéticos. Contrato: [registro y consultas](outputs/registro-y-consultas.md).
+Un proyecto nuevo muestra lista vacía. Para un proyecto preparado con E-02, repetir `init` crea la base que falta conservando su identidad. Las consultas no inicializan ni migran datos. `verificationStatus` distingue evidencia vigente, obsoleta o inválida sin alterar el estado histórico. Contrato: [registro y consultas](outputs/registro-y-consultas.md).
+
+## Probar el circuito simulado
+
+```sh
+java -jar target/odd-lab-0.1.0-SNAPSHOT.jar run --repo /ruta/al/repositorio --request-file examples/requests/simulation.md --runtime simulated --json
+```
+
+El resultado `COMPLETED` verifica un recibo sintético ligado a petición/revisión/intento; **no significa que se haya implementado la petición original**. La petición se conserva literalmente y no se ejecuta como órdenes.
+
+Añade `--scenario retry`, `failure`, `unverified`, `decision` o `permission` para probar correcciones, fallos y decisiones. En `decision`, el comando devuelve 3 y conserva `pendingDecision`; continúa con `resume --repo /ruta/al/repositorio --run UUID` desde Terminal, sin `--json`, para responder `s` o `n`. Con JSON nunca pregunta ni autoriza automáticamente.
+
+`resume` de una simulación completada vuelve a comprobar evidencias sin repetir el runtime. Cambios de código/política, artefactos alterados o intentos de cierre desconocido impiden declarar éxito vigente. Alcance, códigos y límites: [ejecución simulada](outputs/ejecucion-simulada.md).

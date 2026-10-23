@@ -2,6 +2,8 @@ package dev.oddlab.cli;
 
 import dev.oddlab.work.application.QueryRuns;
 import dev.oddlab.work.domain.RunRecord;
+import dev.oddlab.verification.application.EvidenceInspector;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -14,24 +16,39 @@ public final class StatusCommand extends ProjectCommand {
     @Option(names = "--run", paramLabel = "<id>", description = "UUID de una ejecución; si se omite, lista las ejecuciones.")
     private UUID runId;
     private final QueryRuns query;
+    private final EvidenceInspector evidence;
 
-    public StatusCommand(QueryRuns query, CommandOutput output) {
+    public StatusCommand(QueryRuns query, EvidenceInspector evidence, CommandOutput output) {
         super(output);
         this.query = query;
+        this.evidence = evidence;
     }
 
     @Override
     protected int perform() {
         if (runId != null) {
-            var run = query.inspect(repository, runId).run();
-            return output.write(spec.commandLine(), structured, summary(run), run.runId() + " " + run.state()
-                    + " (versión " + run.version() + ")", null, 0);
+            var snapshot = query.inspect(repository, runId);
+            var run = snapshot.run();
+            var assessment = evidence.assess(repository, snapshot);
+            var result = new LinkedHashMap<String, Object>(summary(run));
+            result.put("verificationStatus", assessment.status());
+            result.put("pendingDecision", ExecutionPresentation.pending(snapshot));
+            return output.write(spec.commandLine(), structured, result, run.runId() + " " + run.state()
+                    + " (versión " + run.version() + ") Verificación: " + assessment.status(), null, 0);
         }
         var runs = query.list(repository);
-        String message = runs.isEmpty() ? "Sin ejecuciones registradas."
-                : runs.stream().map(run -> run.runId() + " " + run.state() + " (versión " + run.version() + ")")
+        var summaries = runs.stream().map(run -> {
+            var snapshot = query.inspect(repository, run.runId());
+            var result = new LinkedHashMap<String, Object>(summary(snapshot.run()));
+            result.put("verificationStatus", evidence.assess(repository, snapshot).status());
+            result.put("pendingDecision", ExecutionPresentation.pending(snapshot));
+            return result;
+        }).toList();
+        String message = summaries.isEmpty() ? "Sin ejecuciones registradas."
+                : summaries.stream().map(result -> result.get("runId") + " " + result.get("state")
+                + " (versión " + result.get("version") + ") Verificación: " + result.get("verificationStatus"))
                 .collect(Collectors.joining(System.lineSeparator()));
-        return output.write(spec.commandLine(), structured, Map.of("runs", runs.stream().map(StatusCommand::summary).toList()), message, null, 0);
+        return output.write(spec.commandLine(), structured, Map.of("runs", summaries), message, null, 0);
     }
 
     static Map<String, Object> summary(RunRecord run) {

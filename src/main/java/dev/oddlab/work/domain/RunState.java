@@ -22,9 +22,9 @@ public enum RunState {
             case RECONCILIATION_REQUIRED -> Set.of(EXPLORING, READY, FAILED);
             case COMPLETED, CANCELLED, FAILED -> Set.of();
         };
-        // E-03 cannot attest acceptance or confirmed process detachment. Dedicated operations follow in E-04/E-05.
+        // Generic transitions cannot attest acceptance or process detachment; completion has a dedicated verified operation.
         if (target == COMPLETED || target == PAUSED || target == CANCELLED) {
-            throw new JournalException("STATE_PROOF_REQUIRED", "Este estado requiere verificación o detención confirmada, todavía no implementadas.", 2);
+            throw new JournalException("STATE_PROOF_REQUIRED", "Este estado requiere un caso de uso con verificación o detención confirmada.", 2);
         }
         if (!available.contains(target)) {
             throw new JournalException("INVALID_STATE_TRANSITION", "Transición de estado no permitida.", 2);

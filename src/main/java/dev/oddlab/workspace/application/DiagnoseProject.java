@@ -31,7 +31,8 @@ public final class DiagnoseProject {
         } catch (JournalException exception) {
             checks.add(new ProjectAccess.Check("STORAGE", "ERROR", exception.code() + ": " + exception.getMessage()));
         }
-        checks.add(new ProjectAccess.Check("RUNTIME", "NOT_CONFIGURED", "Sin runtime conectado; no se ha iniciado inferencia."));
+        checks.add(new ProjectAccess.Check("SIMULATION", "AVAILABLE", "Flujo simulado local de E-04 disponible, sin inferencia."));
+        checks.add(new ProjectAccess.Check("RUNTIME", "NOT_CONFIGURED", "Sin proveedor real conectado; solo se admite --runtime simulated."));
         return new Result(root, configuration, List.copyOf(checks));
     }
 

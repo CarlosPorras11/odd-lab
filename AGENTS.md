@@ -5,7 +5,7 @@
 - Leer `outputs/continuidad.md` y `outputs/preparacion-implementacion.md` antes de trabajar; después, los contratos de la entrega afectada.
 - Diseño vigente en `outputs/`: arquitectura, decisiones, contratos, estructura/CLI y piloto. `work/` contiene borradores históricos excluidos de Git; no reemplazan las versiones finales.
 - Confirmar directorio y estado Git. Conservar cambios del usuario y archivos de IDE. No crear commits ni publicar por inferencia.
-- Estado actual: E-01 a E-03 implementadas y validadas; E-04 a E-07 pendientes. Evidencia en `outputs/validacion-e01.md`, `outputs/validacion-e02.md` y `outputs/validacion-e03.md`. Consultar el estado actualizado antes de actuar.
+- Estado actual: E-01 a E-04 implementadas y validadas; E-05 a E-07 pendientes. Evidencia en `outputs/validacion-e01.md`, `outputs/validacion-e02.md`, `outputs/validacion-e03.md` y `outputs/validacion-e04.md`. Consultar el estado actualizado antes de actuar.
 
 ## Decisiones de implementación
 
@@ -14,7 +14,7 @@
 - Paquete base provisional `dev.oddlab`; capacidades primero. Crear `domain`, `application`, `infrastructure` solo con contenido real.
 - Dominio y casos de uso independientes de Spring, Picocli, JDBC y protocolo Codex. Spring compone; CLI traduce; adaptadores implementan puertos.
 - Coordinación, políticas, memoria, estado y evidencia propios. Runtime completo detrás de un puerto; Codex App Server por stdio es propuesta de E-06, pendiente de validación.
-- E-02 incorpora configuración YAML y salida JSON con SnakeYAML/Jackson gestionados por Boot. Contrato en `outputs/configuracion-y-diagnostico.md`. No conectar proveedores ni introducir inferencia directa. E-03 incorpora SQLite JDBC 3.53.4.0 detrás de `RunJournal`; contrato en `outputs/registro-y-consultas.md`. No modificar migraciones ya aplicadas; añadir versiones nuevas cuando corresponda. Consultas siempre en modo de solo lectura, sin inicialización implícita.
+- E-02 incorpora configuración YAML y salida JSON con SnakeYAML/Jackson gestionados por Boot. Contrato en `outputs/configuracion-y-diagnostico.md`. No conectar proveedores ni introducir inferencia directa. E-03 incorpora SQLite JDBC 3.53.4.0 detrás de `RunJournal`; contrato en `outputs/registro-y-consultas.md`. No modificar migraciones ya aplicadas; añadir versiones nuevas cuando corresponda. Consultas siempre en modo de solo lectura, sin inicialización implícita. E-04 incorpora `run`/`resume` con selección explícita `--runtime simulated`; contrato en `outputs/ejecucion-simulada.md`. No confundir aceptación del circuito sintético con implementación de la petición; no conectar proveedores ni ampliar a E-05 por inferencia.
 
 ## Ejecución y evidencia
 

@@ -159,20 +159,68 @@ public final class SqliteRunJournal implements RunJournal {
             var current = snapshot(connection, repositoryId, runId).run();
             requireVersion(current, expectedVersion);
             if (current.state().terminal()) throw new JournalException("RUN_TERMINAL", "La ejecución está en estado terminal.", 2);
-            try (var statement = connection.prepareStatement("INSERT INTO run_entries VALUES (?, ?, ?, ?, ?, ?)")) {
-                statement.setString(1, runId.toString());
-                statement.setString(2, entry.id().toString());
-                statement.setString(3, entry.kind().name());
-                statement.setInt(4, entry.schemaVersion());
-                statement.setString(5, entry.title());
-                statement.setString(6, json.writeValueAsString(entry.data()));
-                statement.executeUpdate();
-            }
+            insertEntry(connection, runId, entry);
             Instant now = nextTime(current);
             update(connection, current, expectedVersion, current.state(), now);
             event(connection, runId, expectedVersion + 1, "ENTRY_ADDED", current.state(), current.state(), actor, entry.id().toString(), now);
             return null;
         });
+    }
+
+    @Override
+    public void appendAndTransition(Path repository, UUID repositoryId, UUID runId, long expectedVersion,
+                                    RunEntry entry, RunState target, String actor, String reason) {
+        requireText(actor, reason);
+        write(repository, repositoryId, connection -> {
+            var current = snapshot(connection, repositoryId, runId).run();
+            requireVersion(current, expectedVersion);
+            current.state().requireTransitionTo(target);
+            appendTransition(connection, current, entry, target, actor, reason);
+            return null;
+        });
+    }
+
+    @Override
+    public void completeSimulation(Path repository, UUID repositoryId, UUID runId, long expectedVersion, RunEntry evidence, String actor) {
+        requireText(actor);
+        write(repository, repositoryId, connection -> {
+            var snapshot = snapshot(connection, repositoryId, runId);
+            var current = snapshot.run();
+            requireVersion(current, expectedVersion);
+            if (current.state() != RunState.VERIFYING || evidence.kind() != RunEntry.Kind.EVIDENCE
+                    || !"SIMULATION".equals(evidence.data().get("scope")) || !"true".equals(evidence.data().get("verified"))
+                    || !current.requestSha256().equals(evidence.data().get("requestSha256"))
+                    || !current.baseRevision().equals(evidence.data().get("revision"))
+                    || snapshot.entries().stream().noneMatch(entry -> entry.kind() == RunEntry.Kind.REQUIREMENT
+                            && "SIMULATED_RECEIPT".equals(entry.data().get("criterion")))
+                    || snapshot.entries().stream().noneMatch(entry -> entry.kind() == RunEntry.Kind.TASK
+                            && "TASK".equals(entry.data().get("recordType")) && entry.id().toString().equals(evidence.data().get("taskId")))) {
+                throw new JournalException("STATE_PROOF_REQUIRED", "Falta evidencia de aceptación de la simulación.", 2);
+            }
+            appendTransition(connection, current, evidence, RunState.COMPLETED, actor, "Simulación verificada; no implementación de la petición");
+            return null;
+        });
+    }
+
+    private void insertEntry(Connection connection, UUID runId, RunEntry entry) throws SQLException {
+        try (var statement = connection.prepareStatement("INSERT INTO run_entries VALUES (?, ?, ?, ?, ?, ?)")) {
+            statement.setString(1, runId.toString());
+            statement.setString(2, entry.id().toString());
+            statement.setString(3, entry.kind().name());
+            statement.setInt(4, entry.schemaVersion());
+            statement.setString(5, entry.title());
+            statement.setString(6, json.writeValueAsString(entry.data()));
+            statement.executeUpdate();
+        }
+    }
+
+    private void appendTransition(Connection connection, RunRecord current, RunEntry entry, RunState target, String actor, String reason) throws SQLException {
+        Instant now = nextTime(current);
+        insertEntry(connection, current.runId(), entry);
+        update(connection, current, current.version(), current.state(), now);
+        event(connection, current.runId(), current.version() + 1, "ENTRY_ADDED", current.state(), current.state(), actor, entry.id().toString(), now);
+        update(connection, current, current.version() + 1, target, now);
+        event(connection, current.runId(), current.version() + 2, "STATE_CHANGED", current.state(), target, actor, reason, now);
     }
 
     private <T> T read(Path repository, UUID repositoryId, Operation<T> operation) {
