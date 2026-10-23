@@ -5,7 +5,7 @@
 - Leer `outputs/continuidad.md` y `outputs/preparacion-implementacion.md` antes de trabajar; después, los contratos de la entrega afectada.
 - Diseño vigente en `outputs/`: arquitectura, decisiones, contratos, estructura/CLI y piloto. `work/` contiene borradores históricos excluidos de Git; no reemplazan las versiones finales.
 - Confirmar directorio y estado Git. Conservar cambios del usuario y archivos de IDE. No crear commits ni publicar por inferencia.
-- Estado actual: E-01 implementada y validada; E-02 a E-07 pendientes. Evidencia en `outputs/validacion-e01.md`. Consultar el estado actualizado antes de actuar.
+- Estado actual: E-01 y E-02 implementadas y validadas; E-03 a E-07 pendientes. Evidencia en `outputs/validacion-e01.md` y `outputs/validacion-e02.md`. Consultar el estado actualizado antes de actuar.
 
 ## Decisiones de implementación
 
@@ -14,7 +14,7 @@
 - Paquete base provisional `dev.oddlab`; capacidades primero. Crear `domain`, `application`, `infrastructure` solo con contenido real.
 - Dominio y casos de uso independientes de Spring, Picocli, JDBC y protocolo Codex. Spring compone; CLI traduce; adaptadores implementan puertos.
 - Coordinación, políticas, memoria, estado y evidencia propios. Runtime completo detrás de un puerto; Codex App Server por stdio es propuesta de E-06, pendiente de validación.
-- No introducir llamadas directas de inferencia, dependencias de persistencia ni conexión a proveedores en E-01.
+- E-02 incorpora configuración YAML y salida JSON con SnakeYAML/Jackson gestionados por Boot. Contrato en `outputs/configuracion-y-diagnostico.md`. No conectar proveedores ni introducir inferencia directa. Persistencia transaccional pendiente de E-03.
 
 ## Ejecución y evidencia
 

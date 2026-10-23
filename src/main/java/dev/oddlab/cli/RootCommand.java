@@ -7,7 +7,7 @@ import picocli.CommandLine.Spec;
 
 @Command(name = "odd-lab", mixinStandardHelpOptions = true,
         description = "Sistema propio de desarrollo con agentes inspirado en ODD.",
-        footer = "Comandos de proyecto todavía no disponibles.")
+        footer = "Los comandos de ejecución de agentes todavía no están disponibles.")
 public final class RootCommand implements Callable<Integer> {
 
     @Spec

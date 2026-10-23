@@ -1,6 +1,6 @@
 # Continuidad de odd-lab
 
-Actualizado el 23 de octubre de 2026. E-01 implementada y validada; E-02 a E-07 pendientes. Este resumen permite retomar en otra conversación sin volver a decidir la arquitectura.
+Actualizado el 23 de octubre de 2026. E-01 y E-02 implementadas y validadas; E-03 a E-07 pendientes. Este resumen permite retomar en otra conversación sin volver a decidir la arquitectura.
 
 ## Punto de entrada
 
@@ -18,7 +18,7 @@ Primer escenario: uso individual en repositorios empresariales, preparado concep
 
 **Gentle-AI y Engram están excluidos de la arquitectura.** Que existan instalados en la máquina no los convierte en dependencias. No desinstalarlos ni cambiar su configuración como parte de este trabajo.
 
-Carlos pidió guardar el plan antes de implementar, preparar el contexto y después comenzar E-01. Esa entrega está implementada y validada, sin ampliar el alcance a E-02 ni conectar un runtime. La preparación está recogida en [preparación de implementación](preparacion-implementacion.md) y los resultados en [validación E-01](validacion-e01.md).
+Carlos pidió guardar el plan, preparar el contexto e implementar E-01; después autorizó E-02. Ambas están implementadas y validadas, sin comenzar E-03 ni conectar un runtime. La preparación está en [preparación de implementación](preparacion-implementacion.md) y los resultados en [validación E-01](validacion-e01.md) y [validación E-02](validacion-e02.md).
 
 ## Decisiones cerradas
 
@@ -66,16 +66,16 @@ Comandos previstos: `init`, `run`, `status`, `inspect`, `pause`, `resume`, `canc
 
 Se exige repositorio explícito en las operaciones de proyecto. `run` recibe un archivo de petición. `status` e `inspect` son consultivos y no invocan IA. En modo JSON no se pregunta ni se autoriza automáticamente: una decisión pendiente detiene de forma segura o requiere reconciliación.
 
-La especificación detallada de sintaxis, formato de salida, códigos, datos de `init` y ciclo de procesos está en [estructura y CLI](estructura-y-cli.md). Existe la raíz con `--help`, `--version` y ayuda sin argumentos; los comandos operativos y `--json` siguen pendientes.
+La especificación detallada de sintaxis, formato de salida, códigos, datos de `init` y ciclo de procesos está en [estructura y CLI](estructura-y-cli.md). Existen raíz con ayuda/versión y comandos `init`/`doctor`, ambos con `--repo` obligatorio y salida `--json`. Los comandos sobre ejecuciones siguen pendientes. Descriptor y política v1 en [configuración y diagnóstico](configuracion-y-diagnostico.md).
 
 ## Estado real observado al guardar
 
-- Hay cinco documentos de diseño, este resumen, preparación de implementación y validación E-01.
+- Hay documentación de diseño, continuidad, preparación, contrato de configuración E-02 y validaciones E-01/E-02.
 - Hay archivos de IntelliJ `.idea` y metadatos de macOS; preservarlos salvo petición posterior.
-- Existen `pom.xml`, Wrapper Unix/Windows, dos clases Java de aplicación (`bootstrap` y `cli`), recursos y dos clases de pruebas. No se han creado capas vacías.
+- Existen POM, Wrapper Unix/Windows y capacidades `bootstrap`, `cli`, `policy` y `workspace`, con dominio y aplicación independientes de Spring/Picocli. Adaptadores locales para Git, archivos y YAML; sin capas vacías.
 - Repositorio Git local inicializado en `main` por petición de Carlos. La documentación se versiona junto al `.gitignore`; consultar el historial al retomar.
-- `clean verify` con Wrapper Maven 3.9.16 y Temurin 25.0.2: 3 pruebas de composición y 10 de integración del JAR, todas superadas. Resultado: `target/odd-lab-0.1.0-SNAPSHOT.jar`.
-- No hay memoria propia creada ni runtime conectado.
+- `clean verify` con Wrapper Maven 3.9.16 y Temurin 25.0.2: 21 pruebas de composición/configuración y 36 de integración del JAR, todas superadas (57). Resultado: `target/odd-lab-0.1.0-SNAPSHOT.jar`.
+- No hay memoria transaccional creada ni runtime conectado. E-02 prepara directorios operativos únicamente; las pruebas usan repositorios temporales, sin inicializar este proyecto automáticamente.
 - Se han descargado Maven y dependencias de construcción en cachés locales. No se han cambiado instalaciones ni preferencias globales; Windows no probado.
 
 Las versiones locales observadas anteriormente fueron Codex CLI `0.163.0-alpha.11.2`, Gentle-AI `3.7.0` y Engram `1.15.0`. Son un inventario histórico, no una dependencia ni confirmación de estado actual.
@@ -83,22 +83,28 @@ Las versiones locales observadas anteriormente fueron Codex CLI `0.163.0-alpha.1
 ## Plan de ejecución pendiente
 
 - [x] **E-01:** esqueleto Maven, Java 25, composición Spring Boot y raíz Picocli con ayuda y versión. Validada; véase [evidencia](validacion-e01.md).
-- [ ] **E-02:** configuración del repositorio, política inicial y diagnóstico local.
+- [x] **E-02:** configuración del repositorio, política inicial, `init` y `doctor`; salida humana/JSON. [Evidencia](validacion-e02.md).
 - [ ] **E-03:** almacenamiento transaccional propio, estados y comandos consultivos.
 - [ ] **E-04:** `run` y `resume` con runtime simulado, evidencia y decisiones pendientes.
 - [ ] **E-05:** control de procesos, pausa/cancelación, propiedad y recuperación tras caída.
 - [ ] **E-06:** adaptador Codex y pruebas reales de protocolo, capacidades e aislamiento.
 - [ ] **E-07:** verificación integrada y comparación del piloto CSV.
 
-E-01 mantiene el alcance pequeño: ayuda y versión sin repositorio ni runtime, errores de uso consistentes y cierre comprobado. Siguiente entrega: E-02, configuración y política inicial, `init` y `doctor`; todavía no implementada.
+E-01 mantiene ayuda y versión sin repositorio ni runtime. E-02 añade inicialización idempotente, preservación de descriptor/archivos y diagnóstico de solo lectura. Siguiente entrega: E-03, registro transaccional propio, estados y comandos consultivos; todavía no implementada.
 
-Maven 3.9.16 y Wrapper 3.3.4 están generados y validados con Temurin 25.0.2. Pendientes técnicos por entrega: actualización/distribución empresarial del JDK 25, bibliotecas de persistencia/JSON, migraciones, autenticación de Codex y detalles efectivos de sandbox. Consultar fuentes oficiales actuales antes de fijar dependencias; conservar las versiones ya elegidas salvo incompatibilidad demostrada y explicada.
+Maven 3.9.16 y Wrapper 3.3.4 están generados y validados con Temurin 25.0.2. Pendientes técnicos por entrega: actualización/distribución empresarial del JDK 25, bibliotecas de persistencia, migraciones, autenticación de Codex y detalles efectivos de sandbox. Consultar fuentes oficiales actuales antes de fijar dependencias; conservar las versiones ya elegidas salvo incompatibilidad demostrada y explicada.
 
 ## Preparación del arranque
 
 Los seis documentos vigentes se han revisado. [Preparación de implementación](preparacion-implementacion.md) consolida el contexto, registra el entorno y concreta E-01 con criterios verificables. Se añade `AGENTS.md` como guía local. El cambio previo del usuario sobre los borradores trasladados a `work/` se conserva.
 
 Atención al JDK: `java` resuelve OpenJDK 26.0.1, mientras `mvn -version` usa Java 25.0.2 de Homebrew. E-01 se ha construido y ejecutado seleccionando Temurin 25.0.2 explícitamente, sin cambiar configuración global. E01-A a E01-G superados en macOS; evidencia y comandos en [validación E-01](validacion-e01.md).
+
+## Contrato y límites de E-02
+
+Descriptor `.odd-lab.yaml` v1 con identidad UUID y política v1, inicialmente sin proveedores ni red. Límites del piloto: máximo 2 subagentes y 2 correcciones; publicación y cambios en sistemas externos reservados al usuario. Configuración YAML estricta, sin campos desconocidos, secretos ni migración automática. YAML/JSON mediante SnakeYAML 2.6 y Jackson 3.1.7 gestionados por Boot.
+
+`init` valida antes de preparar directorios y exclusiones Git; no sustituye descriptor válido ni borra obstáculos. Repetirlo repara layout/exclusiones incompletos. `doctor` no escribe, no repara ni inicia IA; informa de almacenamiento `NOT_IMPLEMENTED` y runtime `NOT_CONFIGURED`. Una preparación sana no acredita ejecución de agentes. La inicialización no es una transacción de varios archivos ni un mecanismo de aislamiento frente a cambios hostiles concurrentes. Contrato detallado en [configuración y diagnóstico](configuracion-y-diagnostico.md).
 
 ## Piloto previsto
 
@@ -118,4 +124,4 @@ Este resumen orienta; los documentos detallan los contratos. Si el usuario cambi
 
 ## Texto para retomar en otra conversación
 
-> Trabaja en `/Users/carlos/dev/01-proyectos/odd-lab`. Lee `AGENTS.md`, `outputs/continuidad.md` y los contratos de la entrega. E-01 ya está implementada y validada; no la rehagas. Continúa con E-02: configuración del repositorio, política inicial, `init` y `doctor`. Comprueba antes el estado real. Mantén Java 25, Spring Boot 4.1.2, Picocli 4.7.7, coordinación y memoria propias; sin Gentle-AI ni Engram. No conectes un runtime ni amplíes a E-03. Actualiza estado y evidencia al terminar.
+> Trabaja en `/Users/carlos/dev/01-proyectos/odd-lab`. Lee `AGENTS.md`, `outputs/continuidad.md`, `outputs/configuracion-y-diagnostico.md` y los contratos de la entrega. E-01 y E-02 ya están implementadas y validadas. Continúa con E-03: registro transaccional propio, estados y comandos consultivos. Comprueba antes el estado real. Mantén Java 25, Spring Boot 4.1.2, Picocli 4.7.7 y coordinación/memoria propias; sin Gentle-AI ni Engram. No conectes un runtime ni amplíes a E-04. Actualiza estado y evidencia al terminar.

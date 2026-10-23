@@ -1,6 +1,13 @@
 package dev.oddlab.bootstrap;
 
 import dev.oddlab.cli.RootCommand;
+import dev.oddlab.cli.CommandOutput;
+import dev.oddlab.cli.InitCommand;
+import dev.oddlab.cli.DoctorCommand;
+import dev.oddlab.workspace.application.InitializeProject;
+import dev.oddlab.workspace.application.DiagnoseProject;
+import dev.oddlab.workspace.application.ProjectAccess;
+import dev.oddlab.workspace.infrastructure.LocalProjectAccess;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import org.springframework.boot.Banner;
@@ -35,9 +42,33 @@ public class OddLabApplication {
     }
 
     @Bean
-    CommandLine commandLine(BuildProperties buildProperties) {
+    ProjectAccess projectAccess() {
+        return new LocalProjectAccess();
+    }
+
+    @Bean
+    CommandLine commandLine(BuildProperties buildProperties, ProjectAccess projectAccess) {
         var commandLine = new CommandLine(new RootCommand());
+        var output = new CommandOutput();
+        commandLine.addSubcommand("init", new InitCommand(new InitializeProject(projectAccess), output));
+        commandLine.addSubcommand("doctor", new DoctorCommand(new DiagnoseProject(projectAccess), output));
         commandLine.getCommandSpec().version(buildProperties.getName() + " " + buildProperties.getVersion());
+        commandLine.getSubcommands().values().forEach(command -> command.getCommandSpec()
+                .version(commandLine.getCommandSpec().version()));
+        commandLine.setParameterExceptionHandler((exception, args) -> {
+            var command = exception.getCommandLine();
+            boolean structured = !command.getCommandName().equals("odd-lab")
+                    && java.util.Arrays.stream(args).anyMatch(value -> value.equals("--json") || value.equals("--json=true"));
+            if (structured) {
+                return output.write(command, true, null, "Argumentos inválidos; consulta --help.", "USAGE_INVALID", 2);
+            }
+            command.getErr().println(exception.getMessage());
+            command.usage(command.getErr());
+            return 2;
+        });
+        commandLine.setExecutionExceptionHandler((exception, command, parseResult) -> output.write(command,
+                parseResult.hasMatchedOption("--json"), null,
+                "Fallo interno del comando; no se ha confirmado su finalización.", "INTERNAL_ERROR", 1));
         return commandLine;
     }
 }

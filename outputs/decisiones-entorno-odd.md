@@ -84,11 +84,11 @@ Propiedad del sistema no significa ausencia de dependencias técnicas. Cada una 
 
 ## Estado
 
-- E-01 implementada y validada: POM, Wrapper, composición Spring no web y raíz Picocli con ayuda y versión. E-02 a E-07 pendientes.
+- E-01 implementada y validada: POM, Wrapper, composición Spring no web y raíz Picocli con ayuda y versión. E-02 también implementada: configuración/política YAML y comandos `init`/`doctor` con JSON. E-03 a E-07 pendientes.
 - Maven y dependencias descargados en cachés locales; sin cambios de instalaciones ni configuración global.
-- No se ha escrito memoria ni conectado un proveedor.
+- No se ha creado memoria transaccional ni conectado un proveedor. E-02 prepara directorios locales, no una base de datos.
 - Java 25, Spring Boot 4.1.2, Picocli 4.7.7 y runtime completo elegidos por Carlos. Codex App Server por stdio es la integración propuesta, pendiente de prueba.
-- No se ha iniciado el runtime; el código actual se limita al esqueleto E-01.
+- No se ha iniciado el runtime; el código actual cubre esqueleto E-01 y configuración/diagnóstico E-02.
 
 
 ## ADR-007 — Estructura y ciclo inicial de CLI
@@ -97,4 +97,4 @@ Se concreta la aplicación como un módulo Maven organizado por capacidades, con
 
 La primera versión ejecuta trabajo en primer plano. Consultas y solicitudes de pausa/cancelación desde otros procesos usan el registro local, con un único propietario que decide transiciones. No se introduce un daemon para el primer alcance.
 
-Nombre de trabajo: `odd-lab`. Ayuda, versión, formato JSON, códigos de salida y criterios de cada comando se describen en [estructura y CLI](estructura-y-cli.md). Ayuda y versión están implementadas; comandos operativos y JSON pendientes.
+Nombre de trabajo: `odd-lab`. Ayuda, versión, formato JSON, códigos de salida y criterios de cada comando se describen en [estructura y CLI](estructura-y-cli.md). Ayuda, versión, `init`, `doctor` y JSON en esos subcomandos están implementados; ejecución de agentes pendiente. Contrato concreto en [configuración y diagnóstico](configuracion-y-diagnostico.md).

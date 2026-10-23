@@ -1,6 +1,6 @@
 # Preparación de implementación de ODD
 
-23 de octubre de 2026. Contexto vigente recogido; E-01 implementada y validada. E-02 a E-07 pendientes. Esta preparación concreta el arranque, sin sustituir los contratos existentes.
+23 de octubre de 2026. Contexto vigente recogido; E-01 y E-02 implementadas y validadas. E-03 a E-07 pendientes. Esta preparación concreta el arranque, sin sustituir los contratos existentes.
 
 ## 1. Orden de lectura y autoridad
 
@@ -97,7 +97,7 @@ Después de crear el Wrapper se ejecutará `./mvnw --version` y `./mvnw clean ve
 
 Esta asignación orienta la implementación; no sustituye escenarios ni evidencia exigida por los contratos. N-01 se ejercitará antes con ejecutor local cuando exista; la garantía del proveedor solo se cierra en E-06. N-11 requiere primero límites del coordinador y después concurrencia real aislada.
 
-Pendientes por entrega: esquema de configuración en E-02; persistencia, JSON y migraciones en E-03; bloqueo y detección de procesos en E-05; versión/esquema de Codex, autenticación y sandbox en E-06. Ninguno exige ampliar E-01.
+Configuración y JSON resueltos en E-02. Pendientes por entrega: persistencia y migraciones en E-03; bloqueo y detección de procesos en E-05; versión/esquema de Codex, autenticación y sandbox en E-06. Ninguno exige ampliar E-01.
 
 ## 7. Estado de salida de esta preparación
 
@@ -106,6 +106,7 @@ Pendientes por entrega: esquema de configuración en E-02; persistencia, JSON y 
 - [x] Identificar diferencia de JDK y preparar selección explícita por terminal.
 - [x] Concretar Maven objetivo y aceptación de E-01; añadir guía local de trabajo.
 - [x] Implementar y validar E-01; 13 pruebas superadas y JAR ejecutable comprobado.
-- [ ] Implementar y validar E-02 a E-07, de forma incremental.
+- [x] Implementar y validar E-02; contrato en [configuración y diagnóstico](configuracion-y-diagnostico.md).
+- [ ] Implementar y validar E-03 a E-07, de forma incremental.
 
-Siguiente trabajo: E-02, configuración y política inicial con `init` y `doctor`. E-01 acredita construcción y contrato de la raíz CLI; no acredita memoria, coordinación, integración con un runtime ni ejecución en Windows.
+Siguiente trabajo: E-03, registro transaccional propio y comandos consultivos. E-02 acredita configuración/política local e inicialización/diagnóstico; no acredita memoria, coordinación, integración con un runtime ni ejecución en Windows.
