@@ -1,6 +1,6 @@
 # Sistema propio de agentes con ODD
 
-Diseño v0.7 · 23 de octubre de 2026 · E-01 y E-02 implementadas y validadas; núcleo de agentes y validación operativa pendientes.
+Diseño v0.7 · 23 de octubre de 2026 · E-01 a E-03 implementadas y validadas; núcleo de agentes y validación operativa pendientes.
 
 ## 1. Objetivo y escenario
 
@@ -14,7 +14,7 @@ La independencia del sistema y la del modelo son decisiones distintas. Un provee
 
 Referencia metodológica: [documentación publicada por Gentleman Programming](https://github.com/Gentleman-Programming/gentle-ai/blob/main/docs/usage.md#organic-driven-development-odd), consultada anteriormente en esta conversación. El diseño propio adopta exploración previa, trabajo proporcional, delegación justificada, continuidad y comprobación con evidencia.
 
-Las decisiones técnicas de este documento son nuestras. No se busca reproducir todo el ecosistema ni afirmar compatibilidad con sus herramientas. La arquitectura sigue siendo el diseño objetivo; E-01 y E-02 están implementadas. Véase [validación E-01](validacion-e01.md).
+Las decisiones técnicas de este documento son nuestras. No se busca reproducir todo el ecosistema ni afirmar compatibilidad con sus herramientas. La arquitectura sigue siendo el diseño objetivo; E-01 a E-03 están implementadas. Véase [validación E-01](validacion-e01.md).
 
 ## 3. Forma inicial del producto
 
@@ -83,7 +83,7 @@ Cada encargo identifica requisito, tarea, versión, base de código, ámbitos pe
 
 ## 7. Memoria propia
 
-Diseño inicial: almacenamiento local transaccional para datos estructurados y archivos para evidencias voluminosas. SQLite es la elección propuesta para el primer adaptador de almacenamiento; queda detrás de un puerto propio.
+Diseño inicial: almacenamiento local transaccional para datos estructurados y archivos para evidencias voluminosas. SQLite es el primer adaptador de almacenamiento, implementado para el registro en E-03; queda detrás de un puerto propio.
 
 Se separan cuatro tipos de información:
 
@@ -145,4 +145,4 @@ La primera versión no ofrece colaboración simultánea, autenticación central,
 Las casillas completas representan diseño redactado, no implementación ni aceptación operativa. Véanse [decisiones](decisiones-entorno-odd.md), [contratos propios](contratos-sistema.md) y [piloto](piloto-odd.md).
 
 
-La estructura de paquetes, los comandos y el ciclo de procesos se concretan en [estructura y CLI](estructura-y-cli.md). La primera entrega E-01 ya proporciona el esqueleto Maven con ayuda y versión. E-02 añade configuración/política local, `init` y `doctor`. Continúan registro propio y runtime simulado según E-03 y E-04.
+La estructura de paquetes, los comandos y el ciclo de procesos se concretan en [estructura y CLI](estructura-y-cli.md). La primera entrega E-01 ya proporciona el esqueleto Maven con ayuda y versión. E-02 añade configuración/política local, `init` y `doctor`. E-03 incorpora registro propio SQLite, estados y consultas. Continúa runtime simulado en E-04.

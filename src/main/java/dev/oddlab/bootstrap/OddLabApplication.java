@@ -4,6 +4,11 @@ import dev.oddlab.cli.RootCommand;
 import dev.oddlab.cli.CommandOutput;
 import dev.oddlab.cli.InitCommand;
 import dev.oddlab.cli.DoctorCommand;
+import dev.oddlab.cli.StatusCommand;
+import dev.oddlab.cli.InspectCommand;
+import dev.oddlab.work.application.QueryRuns;
+import dev.oddlab.work.application.RunJournal;
+import dev.oddlab.memory.infrastructure.SqliteRunJournal;
 import dev.oddlab.workspace.application.InitializeProject;
 import dev.oddlab.workspace.application.DiagnoseProject;
 import dev.oddlab.workspace.application.ProjectAccess;
@@ -47,11 +52,19 @@ public class OddLabApplication {
     }
 
     @Bean
-    CommandLine commandLine(BuildProperties buildProperties, ProjectAccess projectAccess) {
+    RunJournal runJournal() {
+        return new SqliteRunJournal();
+    }
+
+    @Bean
+    CommandLine commandLine(BuildProperties buildProperties, ProjectAccess projectAccess, RunJournal journal) {
         var commandLine = new CommandLine(new RootCommand());
         var output = new CommandOutput();
-        commandLine.addSubcommand("init", new InitCommand(new InitializeProject(projectAccess), output));
-        commandLine.addSubcommand("doctor", new DoctorCommand(new DiagnoseProject(projectAccess), output));
+        commandLine.addSubcommand("init", new InitCommand(new InitializeProject(projectAccess, journal), output));
+        commandLine.addSubcommand("doctor", new DoctorCommand(new DiagnoseProject(projectAccess, journal), output));
+        var queries = new QueryRuns(projectAccess, journal);
+        commandLine.addSubcommand("status", new StatusCommand(queries, output));
+        commandLine.addSubcommand("inspect", new InspectCommand(queries, output));
         commandLine.getCommandSpec().version(buildProperties.getName() + " " + buildProperties.getVersion());
         commandLine.getSubcommands().values().forEach(command -> command.getCommandSpec()
                 .version(commandLine.getCommandSpec().version()));

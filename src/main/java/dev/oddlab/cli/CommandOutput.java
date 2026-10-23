@@ -14,6 +14,10 @@ public final class CommandOutput {
             var envelope = new LinkedHashMap<String, Object>();
             envelope.put("schemaVersion", 1);
             envelope.put("command", command.getCommandName());
+            if (result instanceof Map<?, ?> map) {
+                if (map.containsKey("runId")) envelope.put("runId", map.get("runId"));
+                if (map.containsKey("state")) envelope.put("state", map.get("state"));
+            }
             envelope.put("result", result);
             envelope.put("pendingDecision", null);
             envelope.put("error", errorCode == null ? null : Map.of("code", errorCode, "message", humanMessage));

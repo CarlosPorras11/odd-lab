@@ -1,6 +1,6 @@
 # Configuración y diagnóstico — E-02
 
-Contrato implementado el 23 de octubre de 2026. Amplía [estructura y CLI](estructura-y-cli.md) sin implementar almacenamiento transaccional ni runtime.
+Contrato histórico de E-02, implementado el 23 de octubre de 2026. E-03 amplía `init` con SQLite y `doctor` con comprobación del registro; véase [registro y consultas](registro-y-consultas.md). Las referencias siguientes a almacenamiento pendiente describen E-02. Amplía [estructura y CLI](estructura-y-cli.md) sin implementar almacenamiento transaccional ni runtime.
 
 ## Comandos
 

@@ -1,10 +1,10 @@
 # Estructura Java y contrato inicial de CLI
 
-23 de octubre de 2026 · Diseño e implementación incremental. E-01 y E-02 completadas: construcción, composición, raíz CLI, `init`, `doctor`, política y configuración local. Las capacidades de ejecución, memoria y coordinación siguen pendientes.
+23 de octubre de 2026 · Diseño e implementación incremental. E-01 a E-03 completadas: construcción, configuración/política, registro SQLite y comandos `init`, `doctor`, `status`, `inspect`. Ejecución de agentes y coordinación siguen pendientes.
 
 ## 1. Decisiones de construcción
 
-Base confirmada: Java 25, Spring Boot 4.1.2 y Picocli 4.7.7. Un solo módulo Maven con Wrapper; la [preparación de implementación](preparacion-implementacion.md) concreta Maven 3.9.16 como objetivo y los criterios de E-01. Wrapper 3.3.4 y primera compilación validados en E-01; SnakeYAML y Jackson se usan en E-02 para YAML/JSON; persistencia se elegirá en E-03.
+Base confirmada: Java 25, Spring Boot 4.1.2 y Picocli 4.7.7. Un solo módulo Maven con Wrapper; la [preparación de implementación](preparacion-implementacion.md) concreta Maven 3.9.16 como objetivo y los criterios de E-01. Wrapper 3.3.4 y primera compilación validados en E-01; SnakeYAML y Jackson se usan en E-02 para YAML/JSON; E-03 utiliza SQLite JDBC 3.53.4.0 y migración SQL v1 propia.
 
 Nombre de trabajo del ejecutable: `odd-lab`. Paquete base provisional: `dev.oddlab`; no representa un dominio empresarial registrado. Artefacto inicial: JAR ejecutable. Un lanzador de terminal se añadirá al empaquetado cuando el JAR funcione.
 
@@ -57,7 +57,7 @@ Las colaboraciones entre capacidades usan contratos explícitos, evitando depend
 | `odd-lab cancel --repo <ruta> --run <id>` | Solicitar cancelación y comprobar detención |
 | `odd-lab doctor --repo <ruta>` | Diagnóstico de solo lectura: configuración, almacenamiento y capacidades disponibles |
 
-La raíz ofrece `--help` y `--version`. `init` y `doctor` ya ofrecen ayuda, versión y `--json`; los demás comandos siguen siendo diseño. `--json` selecciona salida estructurada en esos subcomandos. La ruta de repositorio es explícita en la primera versión para evitar actuar sobre uno distinto del esperado.
+La raíz ofrece `--help` y `--version`. `init`, `doctor`, `status` e `inspect` ofrecen ayuda, versión y `--json`; `run` y los comandos de control siguen siendo diseño. `--json` selecciona salida estructurada en esos subcomandos. La ruta de repositorio es explícita en la primera versión para evitar actuar sobre uno distinto del esperado.
 
 `run` usa archivo de petición para conservar texto literal y evitar que una petición larga dependa del escape del shell. El archivo se copia al registro de la ejecución con su hash y versión. No se interpreta como código ni autoriza operaciones fuera de su contenido y la política.
 
@@ -126,7 +126,7 @@ Contrato JSON inicial: `schemaVersion`, `command`, `runId` si existe, `state` si
 
 - [x] E-01 — Maven Wrapper, Java 25, composición Boot y raíz Picocli con ayuda y versión.
 - [x] E-02 — Configuración del proyecto, política inicial y diagnóstico local.
-- [ ] E-03 — Registro transaccional propio, estados y comandos consultivos.
+- [x] E-03 — Registro transaccional propio, estados y comandos consultivos.
 - [ ] E-04 — `run` y `resume` con runtime simulado; evidencia y decisiones pendientes.
 - [ ] E-05 — Solicitudes de control, propiedad de ejecución y recuperación tras caída.
 - [ ] E-06 — Adaptador Codex, negociación de capacidades y pruebas reales de aislamiento.
@@ -134,4 +134,4 @@ Contrato JSON inicial: `schemaVersion`, `command`, `runId` si existe, `state` si
 
 Cada entrega produce una unidad revisable con pruebas del comportamiento relevante. Se comprobarán especialmente uso inválido, exclusión de otro propietario, transiciones, salida JSON y recuperación; una prueba simulada no certifica el runtime real.
 
-Los nombres y contratos anteriores son decisiones de diseño propias. E-01 implementa raíz, ayuda y versión; E-02 implementa `init`, `doctor` y política/configuración v1. E-03 a E-07 siguen pendientes. Véanse [contrato E-02](configuracion-y-diagnostico.md), [validación E-01](validacion-e01.md) y [validación E-02](validacion-e02.md).
+Los nombres y contratos anteriores son decisiones de diseño propias. E-01 implementa raíz, ayuda y versión; E-02 implementa `init`, `doctor` y política/configuración v1. E-03 añade registro transaccional, estados y consultas; E-04 a E-07 siguen pendientes. Véanse [contrato E-02](configuracion-y-diagnostico.md), [validación E-01](validacion-e01.md) y [validación E-02](validacion-e02.md) y [registro E-03](registro-y-consultas.md).

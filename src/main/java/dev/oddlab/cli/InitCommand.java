@@ -6,7 +6,7 @@ import picocli.CommandLine.Command;
 
 @Command(name = "init", mixinStandardHelpOptions = true,
         description = "Prepara identidad, política local y directorios operativos de odd-lab.",
-        footer = "Crea .odd-lab.yaml y .odd-lab/{state,artifacts,workspaces,views}. Añade exclusiones a .gitignore conservando su contenido. No crea commits ni habilita proveedores.")
+        footer = "Crea .odd-lab.yaml, directorios operativos y registro SQLite v1. Añade exclusiones a .gitignore conservando su contenido. No crea commits ni habilita proveedores.")
 public final class InitCommand extends ProjectCommand {
     private final InitializeProject initialize;
 

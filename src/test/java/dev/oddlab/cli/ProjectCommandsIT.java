@@ -66,7 +66,7 @@ class ProjectCommandsIT {
         assertThat(document.path("command").asString()).isEqualTo("doctor");
         assertThat(document.path("error").isNull()).isTrue();
         assertThat(document.at("/result/healthy").asBoolean()).isTrue();
-        assertThat(document.at("/result/checks").toString()).contains("NOT_IMPLEMENTED", "NOT_CONFIGURED");
+        assertThat(document.at("/result/checks").toString()).contains("STORAGE", "NOT_CONFIGURED").doesNotContain("NOT_IMPLEMENTED");
         assertThat(snapshot(repository)).isEqualTo(before);
     }
 

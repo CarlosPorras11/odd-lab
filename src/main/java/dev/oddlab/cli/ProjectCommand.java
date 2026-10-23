@@ -1,6 +1,7 @@
 package dev.oddlab.cli;
 
 import dev.oddlab.workspace.domain.ProjectException;
+import dev.oddlab.work.domain.JournalException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import picocli.CommandLine.Model.CommandSpec;
@@ -28,6 +29,8 @@ abstract class ProjectCommand implements Callable<Integer> {
         try {
             return perform();
         } catch (ProjectException exception) {
+            return output.write(spec.commandLine(), structured, null, exception.getMessage(), exception.code(), exception.exitCode());
+        } catch (JournalException exception) {
             return output.write(spec.commandLine(), structured, null, exception.getMessage(), exception.code(), exception.exitCode());
         }
     }
