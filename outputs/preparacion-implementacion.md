@@ -1,6 +1,6 @@
 # Preparación de implementación de ODD
 
-23 de octubre de 2026. Contexto vigente recogido; implementación todavía pendiente. Esta preparación concreta el arranque, sin sustituir los contratos existentes.
+23 de octubre de 2026. Contexto vigente recogido; E-01 implementada y validada. E-02 a E-07 pendientes. Esta preparación concreta el arranque, sin sustituir los contratos existentes.
 
 ## 1. Orden de lectura y autoridad
 
@@ -29,7 +29,7 @@ Las instrucciones actuales del usuario prevalecen. Ante contradicciones entre do
 
 ## 3. Entorno comprobado
 
-Comprobaciones de solo lectura realizadas en `/Users/carlos/dev/01-proyectos/odd-lab`:
+Inventario histórico al preparar E-01, antes de implementar. Estado actual en [validación E-01](validacion-e01.md). Comprobaciones realizadas en `/Users/carlos/dev/01-proyectos/odd-lab`:
 
 | Elemento | Observación |
 | --- | --- |
@@ -46,9 +46,9 @@ El inventario es una fotografía, no un requisito de rutas para otros equipos. N
 
 ## 4. Construcción preparada
 
-Se concreta **Maven 3.9.16** para el futuro Wrapper: versión estable mantenida de la serie 3.9 según el [historial oficial de Maven](https://maven.apache.org/docs/history.html), consultado en esta preparación. La versión del Wrapper Plugin y los hashes de descarga se fijarán y verificarán al generar sus archivos en E-01; el Maven global solo sirve para ese arranque.
+Se concreta **Maven 3.9.16** para el Wrapper: versión estable mantenida de la serie 3.9 según el [historial oficial de Maven](https://maven.apache.org/docs/history.html), consultado en esta preparación. E-01 ha generado Wrapper 3.3.4 `only-script`, fijado SHA-256 de la distribución y comprobado una descarga limpia. El Maven global solo se ha usado para generar el Wrapper.
 
-La documentación de [Spring Boot 4.1.2](https://docs.spring.io/spring-boot/system-requirements.html) admite Java 25 y Maven desde 3.6.3. [Picocli](https://picocli.info/) publica la biblioteca directa 4.7.7. Esto confirma requisitos documentados; la combinación todavía debe compilarse y ejecutarse en este proyecto.
+La documentación de [Spring Boot 4.1.2](https://docs.spring.io/spring-boot/system-requirements.html) admite Java 25 y Maven desde 3.6.3. [Picocli](https://picocli.info/) publica la biblioteca directa 4.7.7. La combinación se ha compilado y ejecutado en E-01; los resultados están en [validación E-01](validacion-e01.md).
 
 Usar el JDK existente para la validación inicial; la actualización de mantenimiento y distribución empresarial siguen pendientes. No fijar rutas personales dentro del POM.
 
@@ -63,7 +63,7 @@ java -version
 
 Durante E-01: fijar `release=25`, codificación UTF-8 y versiones exactas; componer Spring sin starter web y Picocli sin starter adicional. Propagar el código de Picocli al proceso y cerrar el contexto Spring. La versión mostrada debe proceder de los metadatos de construcción, evitando valores divergentes.
 
-## 5. Entrega E-01 lista para implementar
+## 5. Entrega E-01 implementada y validada
 
 **Resultado:** esqueleto pequeño y compilable, JAR ejecutable, raíz `odd-lab`, ayuda y versión sin requerir repositorio ni runtime.
 
@@ -73,13 +73,13 @@ Comportamiento concretado para este esqueleto: invocación sin argumentos muestr
 
 | Criterio | Comprobación exigida | Estado |
 | --- | --- | --- |
-| E01-A | Wrapper resuelve Maven 3.9.16 y construcción con JDK 25 supera `clean verify` | Pendiente |
-| E01-B | JAR con `--help`: código 0, uso legible, stderr vacío | Pendiente |
-| E01-C | JAR con `--version`: código 0, versión coherente con construcción, stderr vacío | Pendiente |
-| E01-D | JAR sin argumentos: ayuda y código 0 | Pendiente |
-| E01-E | Opción y subcomando desconocidos: código 2, diagnóstico en stderr | Pendiente |
-| E01-F | Invocación desde directorio temporal sin Git/configuración: ayuda y versión funcionan y no crean estado | Pendiente |
-| E01-G | Proceso real termina en tiempo acotado; contexto cerrado y sin servidor HTTP ni procesos runtime | Pendiente |
+| E01-A | Wrapper resuelve Maven 3.9.16 y construcción con JDK 25 supera `clean verify` | Superado en macOS |
+| E01-B | JAR con `--help`: código 0, uso legible, stderr vacío | Superado en macOS |
+| E01-C | JAR con `--version`: código 0, versión coherente con construcción, stderr vacío | Superado en macOS |
+| E01-D | JAR sin argumentos: ayuda y código 0 | Superado en macOS |
+| E01-E | Opción y subcomando desconocidos: código 2, diagnóstico en stderr | Superado en macOS |
+| E01-F | Invocación desde directorio temporal sin Git/configuración: ayuda y versión funcionan y no crean estado | Superado en macOS |
+| E01-G | Proceso real termina en tiempo acotado; contexto cerrado y sin servidor HTTP ni procesos runtime | Superado en macOS |
 
 Después de crear el Wrapper se ejecutará `./mvnw --version` y `./mvnw clean verify` con el JDK seleccionado. Se probará también el JAR empaquetado mediante procesos reales, capturando salidas, código y tiempo de terminación. El script Windows se versiona; no se declarará probado en Windows sin ejecutarlo allí.
 
@@ -105,7 +105,7 @@ Pendientes por entrega: esquema de configuración en E-02; persistencia, JSON y 
 - [x] Confirmar Git, ausencia de implementación y JDK 25 disponible.
 - [x] Identificar diferencia de JDK y preparar selección explícita por terminal.
 - [x] Concretar Maven objetivo y aceptación de E-01; añadir guía local de trabajo.
-- [ ] Implementar y validar E-01.
+- [x] Implementar y validar E-01; 13 pruebas superadas y JAR ejecutable comprobado.
 - [ ] Implementar y validar E-02 a E-07, de forma incremental.
 
-Siguiente trabajo: ejecutar E-01 con esta matriz, conservando los contratos vigentes y actualizando el estado al terminar. La preparación no acredita compilación, descarga de dependencias ni integración con un runtime.
+Siguiente trabajo: E-02, configuración y política inicial con `init` y `doctor`. E-01 acredita construcción y contrato de la raíz CLI; no acredita memoria, coordinación, integración con un runtime ni ejecución en Windows.

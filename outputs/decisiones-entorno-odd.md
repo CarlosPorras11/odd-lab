@@ -66,9 +66,9 @@ Picocli se integra como biblioteca `info.picocli:picocli`. No se presupone compa
 
 El dominio no depende de Spring ni de Picocli; los comandos invocan casos de uso. No se inicia un servidor HTTP en la primera CLI.
 
-Se adopta Maven Wrapper con un único módulo; la [preparación de implementación](preparacion-implementacion.md) fija Maven 3.9.16 como objetivo, pendiente de generar y comprobar en E-01. Quedan por concretar distribución y actualización de Java 25, construcción reproducible, dependencias del adaptador de persistencia y autenticación del runtime. La sintaxis inicial se concreta en el documento de estructura y CLI. Python sigue referido solo al producto CSV propuesto.
+Se adopta Maven Wrapper con un único módulo; la [preparación de implementación](preparacion-implementacion.md) fija Maven 3.9.16 como versión utilizada; Wrapper 3.3.4 generado y comprobado en E-01. Quedan por concretar distribución y actualización de Java 25, construcción reproducible, dependencias del adaptador de persistencia y autenticación del runtime. La sintaxis inicial se concreta en el documento de estructura y CLI. Python sigue referido solo al producto CSV propuesto.
 
-Referencias técnicas consultadas en la decisión: [Spring Boot](https://docs.spring.io/spring-boot/system-requirements.html) y [Picocli](https://picocli.info/). La combinación aún no se ha compilado ni probado en este proyecto.
+Referencias técnicas consultadas en la decisión: [Spring Boot](https://docs.spring.io/spring-boot/system-requirements.html) y [Picocli](https://picocli.info/). La combinación se ha compilado y probado en E-01; véase [validación](validacion-e01.md).
 
 ## Límites de propiedad
 
@@ -84,11 +84,11 @@ Propiedad del sistema no significa ausencia de dependencias técnicas. Cada una 
 
 ## Estado
 
-- Diseño actualizado; repositorio Git local inicializado. No hay código de aplicación.
-- No se ha instalado, actualizado, configurado ni desinstalado software.
+- E-01 implementada y validada: POM, Wrapper, composición Spring no web y raíz Picocli con ayuda y versión. E-02 a E-07 pendientes.
+- Maven y dependencias descargados en cachés locales; sin cambios de instalaciones ni configuración global.
 - No se ha escrito memoria ni conectado un proveedor.
 - Java 25, Spring Boot 4.1.2, Picocli 4.7.7 y runtime completo elegidos por Carlos. Codex App Server por stdio es la integración propuesta, pendiente de prueba.
-- No se ha iniciado el runtime ni generado código de aplicación.
+- No se ha iniciado el runtime; el código actual se limita al esqueleto E-01.
 
 
 ## ADR-007 — Estructura y ciclo inicial de CLI
@@ -97,4 +97,4 @@ Se concreta la aplicación como un módulo Maven organizado por capacidades, con
 
 La primera versión ejecuta trabajo en primer plano. Consultas y solicitudes de pausa/cancelación desde otros procesos usan el registro local, con un único propietario que decide transiciones. No se introduce un daemon para el primer alcance.
 
-Nombre de trabajo: `odd-lab`. Ayuda, versión, formato JSON, códigos de salida y criterios de cada comando se describen en [estructura y CLI](estructura-y-cli.md). Los comandos todavía no están implementados.
+Nombre de trabajo: `odd-lab`. Ayuda, versión, formato JSON, códigos de salida y criterios de cada comando se describen en [estructura y CLI](estructura-y-cli.md). Ayuda y versión están implementadas; comandos operativos y JSON pendientes.

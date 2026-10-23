@@ -1,6 +1,6 @@
 # Sistema propio de agentes con ODD
 
-Diseño v0.7 · 23 de octubre de 2026 · Sin implementación ni validación operativa.
+Diseño v0.7 · 23 de octubre de 2026 · E-01 implementada y validada; núcleo de agentes y validación operativa pendientes.
 
 ## 1. Objetivo y escenario
 
@@ -14,13 +14,13 @@ La independencia del sistema y la del modelo son decisiones distintas. Un provee
 
 Referencia metodológica: [documentación publicada por Gentleman Programming](https://github.com/Gentleman-Programming/gentle-ai/blob/main/docs/usage.md#organic-driven-development-odd), consultada anteriormente en esta conversación. El diseño propio adopta exploración previa, trabajo proporcional, delegación justificada, continuidad y comprobación con evidencia.
 
-Las decisiones técnicas de este documento son nuestras. No se busca reproducir todo el ecosistema ni afirmar compatibilidad con sus herramientas. El alcance continúa siendo documental.
+Las decisiones técnicas de este documento son nuestras. No se busca reproducir todo el ecosistema ni afirmar compatibilidad con sus herramientas. La arquitectura sigue siendo el diseño objetivo; solo E-01 está implementada. Véase [validación E-01](validacion-e01.md).
 
 ## 3. Forma inicial del producto
 
 Una aplicación local modular, con un solo usuario y una interfaz de terminal propia como primera entrada. La interfaz invoca casos de uso del sistema; no contiene la lógica de coordinación.
 
-La primera versión deberá permitir iniciar una petición, consultar progreso, responder una decisión, pausar, reanudar, cancelar y revisar una entrega. Las operaciones se detallan como contratos. Carlos ha elegido Java para la aplicación y un runtime completo como motor; se propone Codex como primera integración. La base elegida es Java 25, Spring Boot 4.1.2 en modo no web y Picocli 4.7.7 para la CLI. Spring compone los componentes; las reglas de dominio se mantienen independientes. La sintaxis CLI y la distribución concreta del JDK quedan pendientes.
+La primera versión deberá permitir iniciar una petición, consultar progreso, responder una decisión, pausar, reanudar, cancelar y revisar una entrega. Las operaciones se detallan como contratos. Carlos ha elegido Java para la aplicación y un runtime completo como motor; se propone Codex como primera integración. La base elegida es Java 25, Spring Boot 4.1.2 en modo no web y Picocli 4.7.7 para la CLI. Spring compone los componentes; las reglas de dominio se mantienen independientes. La sintaxis CLI se define en el documento de estructura; la distribución empresarial del JDK queda pendiente. E-01 se valida con Temurin 25.0.2 local.
 
 La aplicación se estructura por capacidades —trabajo, orquestación, contexto, memoria, políticas, ejecución y verificación— y separa reglas de dominio, casos de uso y adaptadores. Son módulos internos de un proceso; no se crean servicios distribuidos en el piloto.
 
@@ -145,4 +145,4 @@ La primera versión no ofrece colaboración simultánea, autenticación central,
 Las casillas completas representan diseño redactado, no implementación ni aceptación operativa. Véanse [decisiones](decisiones-entorno-odd.md), [contratos propios](contratos-sistema.md) y [piloto](piloto-odd.md).
 
 
-La estructura de paquetes, los comandos y el ciclo de procesos se concretan en [estructura y CLI](estructura-y-cli.md). La primera entrega de implementación será el esqueleto Maven con ayuda y versión, seguida del registro propio y un runtime simulado.
+La estructura de paquetes, los comandos y el ciclo de procesos se concretan en [estructura y CLI](estructura-y-cli.md). La primera entrega E-01 ya proporciona el esqueleto Maven con ayuda y versión. Continúan configuración, registro propio y runtime simulado según E-02 a E-04.

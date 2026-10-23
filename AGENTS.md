@@ -5,7 +5,7 @@
 - Leer `outputs/continuidad.md` y `outputs/preparacion-implementacion.md` antes de trabajar; después, los contratos de la entrega afectada.
 - Diseño vigente en `outputs/`: arquitectura, decisiones, contratos, estructura/CLI y piloto. `work/` contiene borradores históricos excluidos de Git; no reemplazan las versiones finales.
 - Confirmar directorio y estado Git. Conservar cambios del usuario y archivos de IDE. No crear commits ni publicar por inferencia.
-- Estado al preparar esta guía: documentación; E-01 a E-07 pendientes. Consultar el estado actualizado antes de asumir que existe código.
+- Estado actual: E-01 implementada y validada; E-02 a E-07 pendientes. Evidencia en `outputs/validacion-e01.md`. Consultar el estado actualizado antes de actuar.
 
 ## Decisiones de implementación
 

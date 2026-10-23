@@ -1,10 +1,10 @@
 # Estructura Java y contrato inicial de CLI
 
-23 de octubre de 2026 · Diseño para implementación. Los directorios y comandos siguientes todavía no existen.
+23 de octubre de 2026 · Diseño e implementación incremental. E-01 completada; solo existen construcción, `bootstrap`, raíz `cli`, recursos y pruebas. El resto del árbol y los comandos operativos son diseño pendiente.
 
 ## 1. Decisiones de construcción
 
-Base confirmada: Java 25, Spring Boot 4.1.2 y Picocli 4.7.7. Un solo módulo Maven con Wrapper; la [preparación de implementación](preparacion-implementacion.md) concreta Maven 3.9.16 como objetivo y los criterios de E-01. Wrapper y primera compilación pendientes; dependencias de persistencia se elegirán en E-03.
+Base confirmada: Java 25, Spring Boot 4.1.2 y Picocli 4.7.7. Un solo módulo Maven con Wrapper; la [preparación de implementación](preparacion-implementacion.md) concreta Maven 3.9.16 como objetivo y los criterios de E-01. Wrapper 3.3.4 y primera compilación validados en E-01; dependencias de persistencia se elegirán en E-03.
 
 Nombre de trabajo del ejecutable: `odd-lab`. Paquete base provisional: `dev.oddlab`; no representa un dominio empresarial registrado. Artefacto inicial: JAR ejecutable. Un lanzador de terminal se añadirá al empaquetado cuando el JAR funcione.
 
@@ -124,7 +124,7 @@ Contrato JSON inicial: `schemaVersion`, `command`, `runId` si existe, `state` si
 
 ## 8. Primeras entregas de implementación
 
-- [ ] E-01 — Maven Wrapper, Java 25, composición Boot y raíz Picocli con ayuda y versión.
+- [x] E-01 — Maven Wrapper, Java 25, composición Boot y raíz Picocli con ayuda y versión.
 - [ ] E-02 — Configuración del proyecto, política inicial y diagnóstico local.
 - [ ] E-03 — Registro transaccional propio, estados y comandos consultivos.
 - [ ] E-04 — `run` y `resume` con runtime simulado; evidencia y decisiones pendientes.
@@ -134,4 +134,4 @@ Contrato JSON inicial: `schemaVersion`, `command`, `runId` si existe, `state` si
 
 Cada entrega produce una unidad revisable con pruebas del comportamiento relevante. Se comprobarán especialmente uso inválido, exclusión de otro propietario, transiciones, salida JSON y recuperación; una prueba simulada no certifica el runtime real.
 
-Los nombres y contratos anteriores son decisiones de diseño propias. No se ha creado todavía el esqueleto Maven ni implementado ningún comando.
+Los nombres y contratos anteriores son decisiones de diseño propias. E-01 implementa raíz, ayuda y versión; E-02 a E-07 siguen pendientes. Véase [validación E-01](validacion-e01.md).
