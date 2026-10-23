@@ -1,0 +1,93 @@
+# Compilación Java y Maven
+**/target/
+**/build/
+**/out/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.jmod
+# El Wrapper forma parte del proyecto cuando se genere.
+!/.mvn/wrapper/maven-wrapper.jar
+!/.mvn/wrapper/maven-wrapper.properties
+!/.mvn/wrapper/MavenWrapperDownloader.java
+
+# Archivos auxiliares de Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar.part
+
+# IDEs y editores
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.factorypath
+.vscode/
+.vs/
+.nb-gradle/
+nbproject/private/
+*.swp
+*.swo
+*~
+
+# Cachés y herramientas locales
+.gradle/
+.m2/
+.jbang/
+.tooling/
+
+# Logs y diagnósticos JVM
+*.log
+*.hprof
+*.jfr
+hs_err_pid*
+replay_pid*
+
+# Cobertura e informes generados
+/coverage/
+/.scannerwork/
+
+# Configuración local y credenciales
+.env
+.env.*
+!.env.example
+!.env.template
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+application-local.yml
+application-local.yaml
+application-local.properties
+
+# Estado privado de odd-lab; el descriptor .odd-lab.yaml sí es versionable
+.odd-lab/state/
+.odd-lab/artifacts/
+.odd-lab/workspaces/
+.odd-lab/views/
+
+# Intermediarios del proyecto
+/work/
+/tmp/
+/temp/
+
+# Metadatos del sistema operativo
+.DS_Store
+._*
+.Spotlight-V100/
+.Trashes/
+Thumbs.db
+Desktop.ini
