@@ -1,6 +1,6 @@
 # Continuidad de odd-lab
 
-Actualizado el 24 de octubre de 2026. E-01 a E-04 implementadas y validadas; E-05 a E-07 pendientes. Este resumen permite retomar en otra conversación sin volver a decidir la arquitectura.
+Actualizado el 24 de octubre de 2026. E-01 a E-05 implementadas y validadas; E-06 y E-07 pendientes. Este resumen permite retomar en otra conversación sin volver a decidir la arquitectura.
 
 ## Punto de entrada
 
@@ -18,7 +18,7 @@ Primer escenario: uso individual en repositorios empresariales, preparado concep
 
 **Gentle-AI y Engram están excluidos de la arquitectura.** Que existan instalados en la máquina no los convierte en dependencias. No desinstalarlos ni cambiar su configuración como parte de este trabajo.
 
-Carlos pidió implementar por entregas E-01 a E-04. Las cuatro están implementadas y validadas; E-04 solo utiliza el simulador local compilado. No se ha comenzado E-05 ni conectado un proveedor real. La preparación está en [preparación de implementación](preparacion-implementacion.md) y los resultados en [validación E-01](validacion-e01.md), [validación E-02](validacion-e02.md), [validación E-03](validacion-e03.md) y [validación E-04](validacion-e04.md).
+Carlos pidió implementar por entregas E-01 a E-05. E-05 añade propiedad, pausa/cancelación y recuperación con un trabajador Java sintético y su hijo. No se ha conectado un proveedor real ni comenzado E-06. La preparación está en [preparación de implementación](preparacion-implementacion.md) y los resultados en [validación E-01](validacion-e01.md), [validación E-02](validacion-e02.md), [validación E-03](validacion-e03.md), [validación E-04](validacion-e04.md) y [validación E-05](validacion-e05.md).
 
 ## Decisiones cerradas
 
@@ -66,16 +66,16 @@ Comandos previstos: `init`, `run`, `status`, `inspect`, `pause`, `resume`, `canc
 
 Se exige repositorio explícito en las operaciones de proyecto. `run` recibe un archivo de petición. `status` e `inspect` son consultivos y no invocan IA. En modo JSON no se pregunta ni se autoriza automáticamente: una decisión pendiente detiene de forma segura o requiere reconciliación.
 
-La especificación detallada de sintaxis, formato de salida, códigos, datos de `init` y ciclo de procesos está en [estructura y CLI](estructura-y-cli.md). Existen raíz con ayuda/versión y comandos `init`, `doctor`, `status`, `inspect`, `run`, `resume`, con `--repo` obligatorio y salida `--json`. Las consultas son de solo lectura. `run` exige `--runtime simulated`; control de procesos y proveedores reales pendientes. Descriptor y política v1 en [configuración y diagnóstico](configuracion-y-diagnostico.md).
+La especificación detallada de sintaxis, formato de salida, códigos, datos de `init` y ciclo de procesos está en [estructura y CLI](estructura-y-cli.md). Existen raíz con ayuda/versión y comandos `init`, `doctor`, `status`, `inspect`, `run`, `resume`, `pause`, `cancel`, con `--repo` obligatorio y salida `--json`. Las consultas son de solo lectura. `run` exige perfil explícito `simulated` o `process`; este último solo lanza un trabajador Java fijo y su hijo. Proveedores reales pendientes. Descriptor y política v1 en [configuración y diagnóstico](configuracion-y-diagnostico.md).
 
 ## Estado real observado al guardar
 
-- Hay documentación de diseño, continuidad, preparación, contratos E-02/E-03/E-04 y validaciones E-01 a E-04.
+- Hay documentación de diseño, continuidad, preparación, contratos E-02 a E-05 y validaciones E-01 a E-05.
 - Hay archivos de IntelliJ `.idea` y metadatos de macOS; preservarlos salvo petición posterior.
-- Existen POM, Wrapper Unix/Windows y capacidades `bootstrap`, `cli`, `policy`, `workspace`, `work`, `memory`, `runtime`, `orchestration` y `verification`, con dominio y aplicación independientes de Spring/Picocli. Adaptadores locales para Git, archivos, YAML y SQLite; sin capas vacías.
+- Existen POM, Wrapper Unix/Windows y capacidades `bootstrap`, `cli`, `policy`, `workspace`, `work`, `memory`, `runtime`, `orchestration`, `control` y `verification`, con dominio y aplicación independientes de Spring/Picocli. Adaptadores locales para Git, archivos, YAML y SQLite; sin capas vacías.
 - Repositorio Git local inicializado en `main` por petición de Carlos. La documentación se versiona junto al `.gitignore`; consultar el historial al retomar.
-- `clean verify` con Wrapper Maven 3.9.16 y Temurin 25.0.2: 73 pruebas de núcleo y 56 de integración del JAR, todas superadas (129). Resultado: `target/odd-lab-0.1.0-SNAPSHOT.jar`.
-- Existe adaptador de registro transaccional, creado por `init`. Las pruebas usan repositorios temporales sin inicializar este proyecto automáticamente. Solo existe el runtime simulado, sin IA ni proveedores conectados; memoria semántica pendiente.
+- `clean verify` con Wrapper Maven 3.9.16 y Temurin 25.0.2: 86 pruebas de núcleo y 62 de integración del JAR, todas superadas (148). Resultado: `target/odd-lab-0.1.0-SNAPSHOT.jar`.
+- Existe adaptador de registro transaccional, creado por `init`. Las pruebas usan repositorios temporales sin inicializar este proyecto automáticamente. Existen perfiles sintéticos simulated/process, sin IA ni proveedores conectados; memoria semántica pendiente.
 - Se han descargado Maven y dependencias de construcción en cachés locales. No se han cambiado instalaciones ni preferencias globales; Windows no probado.
 
 Las versiones locales observadas anteriormente fueron Codex CLI `0.163.0-alpha.11.2`, Gentle-AI `3.7.0` y Engram `1.15.0`. Son un inventario histórico, no una dependencia ni confirmación de estado actual.
@@ -86,11 +86,11 @@ Las versiones locales observadas anteriormente fueron Codex CLI `0.163.0-alpha.1
 - [x] **E-02:** configuración del repositorio, política inicial, `init` y `doctor`; salida humana/JSON. [Evidencia](validacion-e02.md).
 - [x] **E-03:** almacenamiento transaccional propio, estados y consultas `status`/`inspect`. [Evidencia](validacion-e03.md).
 - [x] **E-04:** `run`/`resume` con runtime simulado explícito, artefactos verificados, presupuesto y decisiones pendientes. [Evidencia](validacion-e04.md).
-- [ ] **E-05:** control de procesos, pausa/cancelación, propiedad y recuperación tras caída.
+- [x] **E-05:** propiedad, pausa/cancelación y recuperación del trabajador Java sintético con hijo. [Evidencia](validacion-e05.md).
 - [ ] **E-06:** adaptador Codex y pruebas reales de protocolo, capacidades e aislamiento.
 - [ ] **E-07:** verificación integrada y comparación del piloto CSV.
 
-E-01 mantiene ayuda y versión sin repositorio ni runtime. E-02 añade inicialización idempotente, preservación de descriptor/archivos y diagnóstico de solo lectura. E-03 aporta registro transaccional, estados, consultas y diagnóstico SQLite. E-04 aporta ese circuito simulado con evidencia y decisiones. Siguiente entrega: E-05, propiedad, pausa/cancelación y recuperación; todavía no implementada.
+E-01 mantiene ayuda y versión sin repositorio ni runtime. E-02 añade inicialización idempotente, preservación de descriptor/archivos y diagnóstico de solo lectura. E-03 aporta registro transaccional, estados, consultas y diagnóstico SQLite. E-04 aporta ese circuito simulado con evidencia y decisiones. E-05 añade propiedad, control y recuperación con procesos reales sintéticos. Siguiente entrega: E-06, integración autorizada del runtime real.
 
 Maven 3.9.16 y Wrapper 3.3.4 están generados y validados con Temurin 25.0.2. Pendientes técnicos por entrega: actualización/distribución empresarial del JDK 25, futuras migraciones de esquema, autenticación de Codex y detalles efectivos de sandbox. Consultar fuentes oficiales actuales antes de fijar dependencias; conservar las versiones ya elegidas salvo incompatibilidad demostrada y explicada.
 
@@ -124,7 +124,17 @@ Intentos, resultados y decisiones se registran como entradas inmutables. Entrada
 
 `status`/`inspect` añaden verificación actual VALID/STALE/INVALID/NOT_VERIFIED y decisiones pendientes, conservando estado histórico y solo lectura. La huella cubre HEAD y archivos de trabajo, incluyendo siempre el descriptor. Vistas Markdown se regeneran con versión desde SQLite al ejecutar/reanudar; no son fuente de estado. Contrato: [ejecución simulada](ejecucion-simulada.md).
 
-Pendiente: propiedad de coordinador con recuperación, control de procesos, proveedor real, sandbox y piloto CSV. Los ensayos actuales no acreditan esas garantías.
+E-05 amplía este circuito con propiedad, control y recuperación de procesos sintéticos. Pendiente: proveedor real, sandbox y piloto CSV; no se infieren esas garantías de la simulación.
+
+## Contrato y límites de E-05
+
+Propiedad exclusiva mediante bloqueo OS por ejecución, sin robo por timeout/PID. Buzón JSON operativo por solicitud, con UUID, ámbito y fecha; solo el propietario confirma control y modifica estados/eventos SQLite. Se conserva V001. Consultas muestran solicitudes en solo lectura. Contrato: [control y recuperación](control-y-recuperacion.md).
+
+`--runtime process --process-seconds 1..60` selecciona un padre Java sintético y su hijo, sin código arbitrario, IA ni petición enviada al trabajador. Se registran PID/inicio y se comprueban descendientes. `pause`/`cancel --wait-seconds 0..30` devuelven 0 con confirmación y 5 sin ella; propietario detenido devuelve 4. Sin propietario, `resume` reconcilia la solicitud. No declarar cierre si faltan identidades o el OS impide observar/detener.
+
+Tras caída con resultado persistido, verificar sin repetir runtime; informe huérfano idéntico se reutiliza por hash. Sin resultado, padre/hijo conocidos se detienen y se conserva PAUSED/CANCELLED; otra invocación continúa, con presupuesto intacto. Efectos desconocidos siguen RECONCILIATION_REQUIRED. PAUSED exige nueva comprobación de cierre/informe. Señal de terminal solicita pausa; SIGKILL necesita reconciliación posterior.
+
+N-03/N-04/N-06/N-07 ejercitados con procesos JVM reales, dos CLI, señal y caída forzada del propietario, dentro del trabajador fijo. No se acredita el runtime futuro ni procesos externos arbitrarios. macOS arm64 validado fuera del sandbox de Codex que bloquea sysctl; Windows no probado. No se han creado estado operativo ni descriptor en el repositorio real.
 
 ## Piloto previsto
 
@@ -144,4 +154,4 @@ Este resumen orienta; los documentos detallan los contratos. Si el usuario cambi
 
 ## Texto para retomar en otra conversación
 
-> Trabaja en `/Users/carlos/dev/01-proyectos/odd-lab`. Lee `AGENTS.md`, `outputs/continuidad.md`, `outputs/ejecucion-simulada.md` y contratos de la entrega. E-01 a E-04 están implementadas y validadas. Continúa con E-05: propiedad de ejecución, solicitudes de pausa/cancelación y recuperación tras caída, con ensayos reales de procesos locales. Comprueba antes el estado actual. Mantén Java 25, Spring Boot 4.1.2, Picocli 4.7.7 y núcleo propio; sin Gentle-AI ni Engram. No conectes Codex/proveedor real ni amplíes a E-06. Actualiza estado y evidencia al terminar.
+> Trabaja en `/Users/carlos/dev/01-proyectos/odd-lab`. Lee `AGENTS.md`, `outputs/continuidad.md`, `outputs/control-y-recuperacion.md` y contratos. E-01 a E-05 implementadas y validadas; continúa con E-06, adaptador del runtime real y pruebas de capacidades/aislamiento. Comprueba estado Git y autorización aplicable antes de enviar contexto a un proveedor. Mantén Java 25, Spring Boot 4.1.2, Picocli 4.7.7 y núcleo propio; sin Gentle-AI ni Engram. Usa datos sintéticos para la integración. No amplíes a E-07 ni publiques por inferencia. Actualiza estado y evidencia al terminar.

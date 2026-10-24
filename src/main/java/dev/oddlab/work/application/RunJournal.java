@@ -27,5 +27,7 @@ public interface RunJournal {
     void appendAndTransition(Path repository, UUID repositoryId, UUID runId, long expectedVersion,
                              RunEntry entry, RunState target, String actor, String reason);
 
+    void confirmStopped(Path repository, UUID repositoryId, UUID runId, long expectedVersion, RunEntry proof, RunState target, String actor);
+
     void completeSimulation(Path repository, UUID repositoryId, UUID runId, long expectedVersion, RunEntry evidence, String actor);
 }

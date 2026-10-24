@@ -1,6 +1,12 @@
 package dev.oddlab.bootstrap;
 
 import dev.oddlab.cli.RootCommand;
+import dev.oddlab.cli.ControlCommand;
+import dev.oddlab.control.application.RunControls;
+import dev.oddlab.control.infrastructure.LocalRunControls;
+import dev.oddlab.runtime.infrastructure.LocalProcessRuntime;
+import dev.oddlab.runtime.infrastructure.LocalProcessSupervisor;
+import dev.oddlab.runtime.infrastructure.ProcessFixture;
 import dev.oddlab.cli.CommandOutput;
 import dev.oddlab.cli.InitCommand;
 import dev.oddlab.cli.DoctorCommand;
@@ -34,6 +40,11 @@ import picocli.CommandLine;
 public class OddLabApplication {
 
     public static void main(String[] args) {
+        if (args.length > 0 && args[0].equals("--internal-process-fixture")) {
+            try { ProcessFixture.main(java.util.Arrays.copyOfRange(args, 1, args.length)); }
+            catch (Exception exception) { System.exit(1); }
+            return;
+        }
         int exitCode = execute(new SpringApplication(OddLabApplication.class), args,
                 new PrintWriter(System.out, true, StandardCharsets.UTF_8),
                 new PrintWriter(System.err, true, StandardCharsets.UTF_8));
@@ -72,11 +83,15 @@ public class OddLabApplication {
         var queries = new QueryRuns(projectAccess, journal);
         var files = new LocalExecutionFiles();
         var evidence = new EvidenceInspector(files);
-        var coordinator = new SimulationCoordinator(projectAccess, journal, files, new SimulatedRuntime(), System.getProperty("user.name"));
-        commandLine.addSubcommand("status", new StatusCommand(queries, evidence, output));
-        commandLine.addSubcommand("inspect", new InspectCommand(queries, evidence, output));
+        var controls = new LocalRunControls();
+        var coordinator = new SimulationCoordinator(projectAccess, journal, files, new SimulatedRuntime(), System.getProperty("user.name"),
+                controls, new LocalProcessSupervisor(), java.util.Map.of("simulated", new SimulatedRuntime(), "process", new LocalProcessRuntime()));
+        commandLine.addSubcommand("status", new StatusCommand(queries, evidence, controls, output));
+        commandLine.addSubcommand("inspect", new InspectCommand(queries, evidence, controls, output));
         commandLine.addSubcommand("run", new RunCommand(coordinator, output));
         commandLine.addSubcommand("resume", new ResumeCommand(coordinator, new ConsoleDecisionInput(), output));
+        commandLine.addSubcommand("pause", new CommandLine(new ControlCommand(coordinator, RunControls.Action.PAUSE, output)).setCommandName("pause"));
+        commandLine.addSubcommand("cancel", new CommandLine(new ControlCommand(coordinator, RunControls.Action.CANCEL, output)).setCommandName("cancel"));
         commandLine.setCaseInsensitiveEnumValuesAllowed(true);
         commandLine.getCommandSpec().version(buildProperties.getName() + " " + buildProperties.getVersion());
         commandLine.getSubcommands().values().forEach(command -> command.getCommandSpec()

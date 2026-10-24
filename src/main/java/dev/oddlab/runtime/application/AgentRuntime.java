@@ -8,6 +8,8 @@ public interface AgentRuntime {
     Capabilities capabilities();
     Result execute(Assignment assignment);
 
+    default Result execute(Assignment assignment, RuntimeControl control) { return execute(assignment); }
+
     record Capabilities(String id, boolean simulated, boolean externalProcesses, boolean tools, boolean network) {}
     record Assignment(UUID runId, UUID taskId, UUID attemptId, int ordinal, String request, String requestSha256,
                       String revision, RepositoryPolicy policy, int maxAttempts, Map<String, String> runtimeOptions) {
@@ -18,6 +20,6 @@ public interface AgentRuntime {
             }
         }
     }
-    enum Status { SUCCEEDED, FAILED, PERMISSION_REQUESTED }
+    enum Status { SUCCEEDED, FAILED, PERMISSION_REQUESTED, STOPPED }
     record Result(Status status, String payload, String message, boolean stopped, String requestedAction) {}
 }

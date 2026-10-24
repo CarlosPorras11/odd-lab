@@ -2,6 +2,8 @@
 
 24 de octubre de 2026. Implementación local de `run`, `resume`, evidencia y decisiones. Sin inferencia, proveedores externos, cambios de código ni control de procesos reales. Amplía [registro E-03](registro-y-consultas.md).
 
+Este documento conserva el contrato de E-04. E-05 amplía perfiles, propiedad, pausa/cancelación y recuperación en [control y recuperación](control-y-recuperacion.md); sus límites históricos no describen por sí solos el estado actual.
+
 ## Entrada y significado del resultado
 
 ```sh

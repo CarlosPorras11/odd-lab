@@ -202,6 +202,26 @@ public final class SqliteRunJournal implements RunJournal {
         });
     }
 
+    @Override
+    public void confirmStopped(Path repository, UUID repositoryId, UUID runId, long expectedVersion,
+                               RunEntry proof, RunState target, String actor) {
+        requireText(actor);
+        write(repository, repositoryId, connection -> {
+            var current = snapshot(connection, repositoryId, runId).run();
+            requireVersion(current, expectedVersion);
+            if (!((current.state() == RunState.PAUSING && target == RunState.PAUSED)
+                    || (current.state() == RunState.CANCELLING && target == RunState.CANCELLED))
+                    || proof.kind() != RunEntry.Kind.EVIDENCE || !"STOP_CONFIRMATION".equals(proof.data().get("recordType"))
+                    || !"true".equals(proof.data().get("stopped")) || !runId.toString().equals(proof.data().get("runId"))
+                    || !current.baseRevision().equals(proof.data().get("revision"))
+                    || !(target == RunState.PAUSED ? "PAUSE" : "CANCEL").equals(proof.data().get("action"))) {
+                throw new JournalException("STATE_PROOF_REQUIRED", "Falta confirmación de detención para esta ejecución.", 2);
+            }
+            appendTransition(connection, current, proof, target, actor, "Detención comprobada por el coordinador");
+            return null;
+        });
+    }
+
     private void insertEntry(Connection connection, UUID runId, RunEntry entry) throws SQLException {
         try (var statement = connection.prepareStatement("INSERT INTO run_entries VALUES (?, ?, ?, ?, ?, ?)")) {
             statement.setString(1, runId.toString());

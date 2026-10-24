@@ -234,8 +234,78 @@ class SimulationCoordinatorTest {
         assertThat(runtime.calls).isEmpty();
     }
 
+    @Test
+    void recoversPersistedResultAndOrphanReportWithoutRepeatingRuntime() {
+        var crashing = new ExecutionFiles() {
+            public String readRequest(Path file) { return files.readRequest(file); }
+            public String revision(Path repository) { return files.revision(repository); }
+            public Artifact save(Path repository, UUID runId, String name, String content) {
+                var artifact = files.save(repository, runId, name, content);
+                if (name.startsWith("verification-")) throw new ExecutionException("CRASH_AFTER_RESULT", "Caída sintética tras publicar informe", 1);
+                return artifact;
+            }
+            public boolean matches(Path repository, Artifact artifact) { return files.matches(repository, artifact); }
+            public boolean receiptMatches(Path repository, Artifact artifact, String hash, String revision, UUID attempt) { return files.receiptMatches(repository, artifact, hash, revision, attempt); }
+            public void renderView(Path repository, RunSnapshot snapshot) { files.renderView(repository, snapshot); }
+        };
+        var coordinator = new SimulationCoordinator(projects, journal, crashing, runtime, "test-user",
+                new dev.oddlab.control.infrastructure.LocalRunControls(), new dev.oddlab.runtime.infrastructure.LocalProcessSupervisor(), Map.of("simulated", runtime));
+        var interrupted = coordinator.run(root, request, SimulationScenario.SUCCESS);
+        assertThat(interrupted.snapshot().run().state()).isEqualTo(RunState.VERIFYING);
+        UUID id = interrupted.snapshot().run().runId();
+        assertThat(coordinator().control(root, id, dev.oddlab.control.application.RunControls.Action.PAUSE, 0).exitCode()).isEqualTo(5);
+        var paused = coordinator().resume(root, id, true, forbiddenInput());
+        assertThat(paused.snapshot().run().state()).isEqualTo(RunState.PAUSED);
+        var recovered = coordinator().resume(root, id, true, forbiddenInput());
+        assertThat(recovered.exitCode()).isZero();
+        assertThat(recovered.verificationStatus()).isEqualTo("VALID");
+        assertThat(runtime.calls).hasSize(1);
+    }
+
+    @Test
+    void ownerlessControlStaysPendingUntilResumeAndPausedDecisionRemainsScoped() {
+        var pending = coordinator().run(root, request, SimulationScenario.DECISION);
+        UUID id = pending.snapshot().run().runId();
+        var requested = coordinator().control(root, id, dev.oddlab.control.application.RunControls.Action.PAUSE, 0);
+        assertThat(requested.exitCode()).isEqualTo(5);
+        assertThat(requested.snapshot().run().state()).isEqualTo(RunState.WAITING_INPUT);
+        var paused = coordinator().resume(root, id, true, forbiddenInput());
+        assertThat(paused.exitCode()).isEqualTo(4);
+        assertThat(paused.snapshot().run().state()).isEqualTo(RunState.PAUSED);
+        var waiting = coordinator().resume(root, id, true, forbiddenInput());
+        assertThat(waiting.exitCode()).isEqualTo(3);
+        var completed = coordinator().resume(root, id, false, input(true));
+        assertThat(completed.exitCode()).isZero();
+        assertThat(runtime.calls).hasSize(1);
+    }
+
+    @Test
+    void ownerlessCancelIsReconciledWithoutRunningThePendingTask() {
+        var pending = coordinator().run(root, request, SimulationScenario.DECISION);
+        UUID id = pending.snapshot().run().runId();
+        assertThat(coordinator().control(root, id, dev.oddlab.control.application.RunControls.Action.CANCEL, 0).exitCode()).isEqualTo(5);
+        var cancelled = coordinator().resume(root, id, true, forbiddenInput());
+        assertThat(cancelled.exitCode()).isEqualTo(4);
+        assertThat(cancelled.snapshot().run().state()).isEqualTo(RunState.CANCELLED);
+        assertThat(runtime.calls).isEmpty();
+    }
+
+    @Test
+    void tamperedStopProofDoesNotAllowRestart() throws Exception {
+        var pending = coordinator().run(root, request, SimulationScenario.DECISION);
+        UUID id = pending.snapshot().run().runId();
+        coordinator().control(root, id, dev.oddlab.control.application.RunControls.Action.PAUSE, 0);
+        var paused = coordinator().resume(root, id, true, forbiddenInput());
+        var proof = paused.snapshot().entries().stream().filter(entry -> "STOP_CONFIRMATION".equals(entry.data().get("recordType"))).findFirst().orElseThrow();
+        Files.writeString(root.resolve(proof.data().get("location")), "alterado");
+        var resumed = coordinator().resume(root, id, true, forbiddenInput());
+        assertThat(resumed.exitCode()).isEqualTo(5);
+        assertThat(resumed.snapshot().run().state()).isEqualTo(RunState.RECONCILIATION_REQUIRED);
+        assertThat(runtime.calls).isEmpty();
+    }
+
     private SimulationCoordinator coordinator() { return coordinator(runtime); }
-    private SimulationCoordinator coordinator(AgentRuntime engine) { return new SimulationCoordinator(projects, journal, files, engine, "test-user"); }
+    private SimulationCoordinator coordinator(AgentRuntime engine) { return new SimulationCoordinator(projects, journal, files, engine, "test-user", new dev.oddlab.control.infrastructure.LocalRunControls(), new dev.oddlab.runtime.infrastructure.LocalProcessSupervisor(), Map.of(engine.capabilities().id(), engine)); }
     private RunEntry configuration(RunSnapshot snapshot) {
         return snapshot.entries().stream().filter(entry -> "RUN_CONFIGURATION".equals(entry.data().get("recordType"))).findFirst().orElseThrow();
     }

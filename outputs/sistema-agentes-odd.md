@@ -1,6 +1,6 @@
 # Sistema propio de agentes con ODD
 
-Diseño v0.7 · 23 de octubre de 2026 · E-01 a E-04 implementadas y validadas; núcleo de agentes y validación operativa pendientes.
+Diseño v0.7 · 23 de octubre de 2026 · E-01 a E-05 implementadas y validadas; núcleo de agentes y validación operativa pendientes.
 
 ## 1. Objetivo y escenario
 
@@ -14,7 +14,7 @@ La independencia del sistema y la del modelo son decisiones distintas. Un provee
 
 Referencia metodológica: [documentación publicada por Gentleman Programming](https://github.com/Gentleman-Programming/gentle-ai/blob/main/docs/usage.md#organic-driven-development-odd), consultada anteriormente en esta conversación. El diseño propio adopta exploración previa, trabajo proporcional, delegación justificada, continuidad y comprobación con evidencia.
 
-Las decisiones técnicas de este documento son nuestras. No se busca reproducir todo el ecosistema ni afirmar compatibilidad con sus herramientas. La arquitectura sigue siendo el diseño objetivo; E-01 a E-04 están implementadas; la última entrega solo usa simulación local. Véase [validación E-01](validacion-e01.md).
+Las decisiones técnicas de este documento son nuestras. No se busca reproducir todo el ecosistema ni afirmar compatibilidad con sus herramientas. La arquitectura sigue siendo el diseño objetivo; E-01 a E-05 están implementadas; la última entrega valida procesos Java sintéticos, sin proveedor. Véase [validación E-01](validacion-e01.md).
 
 ## 3. Forma inicial del producto
 
@@ -145,4 +145,4 @@ La primera versión no ofrece colaboración simultánea, autenticación central,
 Las casillas completas representan diseño redactado, no implementación ni aceptación operativa. Véanse [decisiones](decisiones-entorno-odd.md), [contratos propios](contratos-sistema.md) y [piloto](piloto-odd.md).
 
 
-La estructura de paquetes, los comandos y el ciclo de procesos se concretan en [estructura y CLI](estructura-y-cli.md). La primera entrega E-01 ya proporciona el esqueleto Maven con ayuda y versión. E-02 añade configuración/política local, `init` y `doctor`. E-03 incorpora registro propio SQLite, estados y consultas. E-04 incorpora runtime simulado, evidencia y decisiones. Continúan control de procesos y runtime real en E-05/E-06; véase [ejecución simulada](ejecucion-simulada.md).
+La estructura de paquetes, los comandos y el ciclo de procesos se concretan en [estructura y CLI](estructura-y-cli.md). La primera entrega E-01 ya proporciona el esqueleto Maven con ayuda y versión. E-02 añade configuración/política local, `init` y `doctor`. E-03 incorpora registro propio SQLite, estados y consultas. E-04 incorpora runtime simulado, evidencia y decisiones. E-05 incorpora propiedad y control/recuperación de procesos sintéticos; runtime real pendiente en E-06. Véase [control y recuperación](control-y-recuperacion.md); véase [ejecución simulada](ejecucion-simulada.md).

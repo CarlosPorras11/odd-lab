@@ -17,11 +17,13 @@ public final class StatusCommand extends ProjectCommand {
     private UUID runId;
     private final QueryRuns query;
     private final EvidenceInspector evidence;
+    private final dev.oddlab.control.application.RunControls controls;
 
-    public StatusCommand(QueryRuns query, EvidenceInspector evidence, CommandOutput output) {
+    public StatusCommand(QueryRuns query, EvidenceInspector evidence, dev.oddlab.control.application.RunControls controls, CommandOutput output) {
         super(output);
         this.query = query;
         this.evidence = evidence;
+        this.controls = controls;
     }
 
     @Override
@@ -33,6 +35,7 @@ public final class StatusCommand extends ProjectCommand {
             var result = new LinkedHashMap<String, Object>(summary(run));
             result.put("verificationStatus", assessment.status());
             result.put("pendingDecision", ExecutionPresentation.pending(snapshot));
+        result.put("controlRequests", ExecutionPresentation.controls(controls, repository, snapshot));
             return output.write(spec.commandLine(), structured, result, run.runId() + " " + run.state()
                     + " (versión " + run.version() + ") Verificación: " + assessment.status(), null, 0);
         }
@@ -42,6 +45,7 @@ public final class StatusCommand extends ProjectCommand {
             var result = new LinkedHashMap<String, Object>(summary(snapshot.run()));
             result.put("verificationStatus", evidence.assess(repository, snapshot).status());
             result.put("pendingDecision", ExecutionPresentation.pending(snapshot));
+        result.put("controlRequests", ExecutionPresentation.controls(controls, repository, snapshot));
             return result;
         }).toList();
         String message = summaries.isEmpty() ? "Sin ejecuciones registradas."

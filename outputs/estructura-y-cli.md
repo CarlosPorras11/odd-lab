@@ -1,6 +1,6 @@
 # Estructura Java y contrato inicial de CLI
 
-23 de octubre de 2026 · Diseño e implementación incremental. E-01 a E-04 completadas: construcción, configuración/política, SQLite, consultas y flujo simulado `run`/`resume` con evidencia/decisiones. Runtime real y control de procesos pendientes.
+23 de octubre de 2026 · Diseño e implementación incremental. E-01 a E-05 completadas: construcción, configuración/política, SQLite, consultas y flujo simulado `run`/`resume` con evidencia/decisiones. Control/recuperación con procesos Java sintéticos implementados; runtime real pendiente.
 
 ## 1. Decisiones de construcción
 
@@ -57,7 +57,7 @@ Las colaboraciones entre capacidades usan contratos explícitos, evitando depend
 | `odd-lab cancel --repo <ruta> --run <id>` | Solicitar cancelación y comprobar detención |
 | `odd-lab doctor --repo <ruta>` | Diagnóstico de solo lectura: configuración, almacenamiento y capacidades disponibles |
 
-La raíz ofrece `--help` y `--version`. `init`, `doctor`, `status`, `inspect`, `run` y `resume` ofrecen ayuda, versión y `--json`; `pause`/`cancel` siguen pendientes. `run`/`resume` solo usan simulación explícita según [contrato E-04](ejecucion-simulada.md). `--json` selecciona salida estructurada en esos subcomandos. La ruta de repositorio es explícita en la primera versión para evitar actuar sobre uno distinto del esperado.
+La raíz ofrece `--help` y `--version`. `init`, `doctor`, `status`, `inspect`, `run`, `resume`, `pause` y `cancel` ofrecen ayuda, versión y `--json`. `run`/`resume` usan perfiles sintéticos explícitos según [contrato E-04](ejecucion-simulada.md) y [extensión E-05](control-y-recuperacion.md). `--json` selecciona salida estructurada en esos subcomandos. La ruta de repositorio es explícita en la primera versión para evitar actuar sobre uno distinto del esperado.
 
 `run` usa archivo de petición para conservar texto literal y evitar que una petición larga dependa del escape del shell. El archivo se copia al registro de la ejecución con su hash y versión. No se interpreta como código ni autoriza operaciones fuera de su contenido y la política.
 
@@ -128,10 +128,10 @@ Contrato JSON inicial: `schemaVersion`, `command`, `runId` si existe, `state` si
 - [x] E-02 — Configuración del proyecto, política inicial y diagnóstico local.
 - [x] E-03 — Registro transaccional propio, estados y comandos consultivos.
 - [x] E-04 — `run` y `resume` con runtime simulado; evidencia y decisiones pendientes.
-- [ ] E-05 — Solicitudes de control, propiedad de ejecución y recuperación tras caída.
+- [x] E-05 — Solicitudes de control, propiedad de ejecución y recuperación tras caída.
 - [ ] E-06 — Adaptador Codex, negociación de capacidades y pruebas reales de aislamiento.
 - [ ] E-07 — Verificación integrada y comparación del piloto CSV.
 
 Cada entrega produce una unidad revisable con pruebas del comportamiento relevante. Se comprobarán especialmente uso inválido, exclusión de otro propietario, transiciones, salida JSON y recuperación; una prueba simulada no certifica el runtime real.
 
-Los nombres y contratos anteriores son decisiones de diseño propias. E-01 implementa raíz, ayuda y versión; E-02 implementa `init`, `doctor` y política/configuración v1. E-03 añade registro transaccional, estados y consultas; E-04 añade circuito simulado con evidencia y decisiones; E-05 a E-07 pendientes. Véanse [contrato E-02](configuracion-y-diagnostico.md), [validación E-01](validacion-e01.md) [validación E-02](validacion-e02.md), [registro E-03](registro-y-consultas.md) y [ejecución E-04](ejecucion-simulada.md).
+Los nombres y contratos anteriores son decisiones de diseño propias. E-01 implementa raíz, ayuda y versión; E-02 implementa `init`, `doctor` y política/configuración v1. E-03 añade registro transaccional, estados y consultas; E-04 añade circuito simulado con evidencia y decisiones; E-05 añade propiedad, control y recuperación del trabajador sintético; E-06/E-07 pendientes. Véanse [contrato E-02](configuracion-y-diagnostico.md), [validación E-01](validacion-e01.md), [validación E-02](validacion-e02.md), [registro E-03](registro-y-consultas.md) [ejecución E-04](ejecucion-simulada.md) y [control E-05](control-y-recuperacion.md).

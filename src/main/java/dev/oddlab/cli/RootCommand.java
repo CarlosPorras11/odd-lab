@@ -7,7 +7,7 @@ import picocli.CommandLine.Spec;
 
 @Command(name = "odd-lab", mixinStandardHelpOptions = true,
         description = "Sistema propio de desarrollo con agentes inspirado en ODD.",
-        footer = "run y resume solo admiten simulación local. Proveedores reales y control de procesos pendientes.")
+        footer = "Perfiles simulated y process sintéticos, sin IA. pause/cancel requieren detención comprobada; proveedores reales pendientes.")
 public final class RootCommand implements Callable<Integer> {
 
     @Spec

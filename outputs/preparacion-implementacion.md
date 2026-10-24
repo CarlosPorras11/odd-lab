@@ -1,6 +1,6 @@
 # Preparación de implementación de ODD
 
-23 de octubre de 2026. Contexto vigente recogido; E-01 a E-04 implementadas y validadas. E-05 a E-07 pendientes. Esta preparación concreta el arranque, sin sustituir los contratos existentes.
+23 de octubre de 2026. Contexto vigente recogido; E-01 a E-05 implementadas y validadas. E-06 y E-07 pendientes. Esta preparación concreta el arranque, sin sustituir los contratos existentes.
 
 ## 1. Orden de lectura y autoridad
 
@@ -97,7 +97,7 @@ Después de crear el Wrapper se ejecutará `./mvnw --version` y `./mvnw clean ve
 
 Esta asignación orienta la implementación; no sustituye escenarios ni evidencia exigida por los contratos. N-01 se ejercitará antes con ejecutor local cuando exista; la garantía del proveedor solo se cierra en E-06. N-11 requiere primero límites del coordinador y después concurrencia real aislada.
 
-Configuración y JSON resueltos en E-02. E-03 concreta SQLite y migración v1. Pendientes por entrega: bloqueo y detección de procesos en E-05; versión/esquema de Codex, autenticación y sandbox en E-06. Ninguno exige ampliar E-01.
+Configuración y JSON resueltos en E-02. E-03 concreta SQLite y migración v1. E-05 concreta bloqueo OS y detección de procesos sintéticos; pendientes en E-06: versión/esquema de Codex, autenticación y sandbox. Ninguno exige ampliar E-01.
 
 ## 7. Estado de salida de esta preparación
 
@@ -109,6 +109,7 @@ Configuración y JSON resueltos en E-02. E-03 concreta SQLite y migración v1. P
 - [x] Implementar y validar E-02; contrato en [configuración y diagnóstico](configuracion-y-diagnostico.md).
 - [x] Implementar y validar E-03; contrato en [registro y consultas](registro-y-consultas.md).
 - [x] Implementar y validar E-04; contrato en [ejecución simulada](ejecucion-simulada.md).
-- [ ] Implementar y validar E-05 a E-07, de forma incremental.
+- [x] Implementar y validar E-05; [control y recuperación](control-y-recuperacion.md), con procesos Java sintéticos.
+- [ ] Implementar y validar E-06 y E-07, de forma incremental.
 
-Siguiente trabajo: E-05, propiedad de ejecución, pausa/cancelación y recuperación. E-04 acredita mecánica local de simulación, evidencia y decisiones; no acredita proveedores reales, control de procesos ni ejecución en Windows.
+Siguiente trabajo: E-06, adaptador real autorizado y validación de capacidades/aislamiento. E-05 valida propiedad, pausa/cancelación y recuperación del trabajador sintético; [evidencia](validacion-e05.md). E-04 acredita mecánica local de simulación, evidencia y decisiones; no acredita proveedores reales ni ejecución en Windows; la validación de procesos locales se añade en E-05.

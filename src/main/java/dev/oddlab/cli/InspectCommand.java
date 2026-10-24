@@ -15,11 +15,13 @@ public final class InspectCommand extends ProjectCommand {
     private UUID runId;
     private final QueryRuns query;
     private final EvidenceInspector evidence;
+    private final dev.oddlab.control.application.RunControls controls;
 
-    public InspectCommand(QueryRuns query, EvidenceInspector evidence, CommandOutput output) {
+    public InspectCommand(QueryRuns query, EvidenceInspector evidence, dev.oddlab.control.application.RunControls controls, CommandOutput output) {
         super(output);
         this.query = query;
         this.evidence = evidence;
+        this.controls = controls;
     }
 
     @Override
@@ -33,6 +35,7 @@ public final class InspectCommand extends ProjectCommand {
         var assessment = evidence.assess(repository, snapshot);
         result.put("verificationStatus", assessment.status());
         result.put("pendingDecision", ExecutionPresentation.pending(snapshot));
+        result.put("controlRequests", ExecutionPresentation.controls(controls, repository, snapshot));
         result.put("requirements", snapshot.entries().stream().filter(entry -> entry.kind() == RunEntry.Kind.REQUIREMENT).toList());
         result.put("tasks", snapshot.entries().stream().filter(entry -> entry.kind() == RunEntry.Kind.TASK).toList());
         result.put("decisions", snapshot.entries().stream().filter(entry -> entry.kind() == RunEntry.Kind.DECISION).toList());
@@ -43,6 +46,7 @@ public final class InspectCommand extends ProjectCommand {
                 .append("\nBase Git: ").append(snapshot.run().baseRevision())
                 .append("\nPolítica registrada: ").append(snapshot.run().policy())
                 .append("\nVerificación actual: ").append(assessment.status());
+        message.append("\nSolicitudes de control: ").append(result.get("controlRequests"));
         snapshot.entries().forEach(entry -> message.append("\n").append(entry.kind()).append(" ")
                 .append(entry.id()).append(": ").append(entry.title()).append(" ").append(entry.data()));
         snapshot.events().forEach(event -> message.append("\nEvento v").append(event.version())

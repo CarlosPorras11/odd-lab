@@ -84,7 +84,7 @@ Propiedad del sistema no significa ausencia de dependencias técnicas. Cada una 
 
 ## Estado
 
-- E-01 implementada y validada: POM, Wrapper, composición Spring no web y raíz Picocli con ayuda y versión. E-02 también implementada: configuración/política YAML y comandos `init`/`doctor` con JSON. E-03 también implementada: registro transaccional SQLite, estados y consultas `status`/`inspect`; E-04 implementada con simulación explícita, evidencia y decisiones; E-05 a E-07 pendientes.
+- E-01 implementada y validada: POM, Wrapper, composición Spring no web y raíz Picocli con ayuda y versión. E-02 también implementada: configuración/política YAML y comandos `init`/`doctor` con JSON. E-03 también implementada: registro transaccional SQLite, estados y consultas `status`/`inspect`; E-04 implementada con simulación explícita, evidencia y decisiones; E-05 implementada con control y recuperación de procesos Java sintéticos; E-06/E-07 pendientes.
 - Maven y dependencias descargados en cachés locales; sin cambios de instalaciones ni configuración global.
 - E-03 crea el registro transaccional con `init`; las pruebas verifican rollback, ámbitos y consultas de solo lectura. No hay proveedor conectado ni memoria semántica.
 - Java 25, Spring Boot 4.1.2, Picocli 4.7.7 y runtime completo elegidos por Carlos. Codex App Server por stdio es la integración propuesta, pendiente de prueba.
@@ -97,4 +97,6 @@ Se concreta la aplicación como un módulo Maven organizado por capacidades, con
 
 La primera versión ejecuta trabajo en primer plano. Consultas y solicitudes de pausa/cancelación desde otros procesos usan el registro local, con un único propietario que decide transiciones. No se introduce un daemon para el primer alcance.
 
-Nombre de trabajo: `odd-lab`. Ayuda, versión, formato JSON, códigos de salida y criterios de cada comando se describen en [estructura y CLI](estructura-y-cli.md). Ayuda, versión, `init`, `doctor`, `status`, `inspect`, `run`/`resume` simulados y JSON están implementados; runtime real pendiente. Contrato concreto en [configuración y diagnóstico](configuracion-y-diagnostico.md).
+Nombre de trabajo: `odd-lab`. Ayuda, versión, formato JSON, códigos de salida y criterios de cada comando se describen en [estructura y CLI](estructura-y-cli.md). Ayuda, versión, `init`, `doctor`, `status`, `inspect`, `run`/`resume` sintéticos, `pause`/`cancel` y JSON están implementados; runtime real pendiente. Contrato concreto en [configuración y diagnóstico](configuracion-y-diagnostico.md).
+
+E-05 concreta propiedad mediante bloqueo OS por ejecución y solicitudes mediante buzón JSON operativo; confirmaciones y estados permanecen en SQLite v1. Perfil process fijo, sin órdenes arbitrarias ni IA. Decisión y límites: [control y recuperación](control-y-recuperacion.md).

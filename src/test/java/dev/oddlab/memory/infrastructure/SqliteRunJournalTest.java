@@ -227,6 +227,26 @@ class SqliteRunJournalTest {
         assertError(() -> RunState.VERIFYING.requireTransitionTo(RunState.valueOf(state)), "STATE_PROOF_REQUIRED");
     }
 
+    @Test
+    void confirmedStopRequiresScopeAndRollsBackProofWhenFinalEventFails() throws Exception {
+        journal.initialize(repository, repositoryId);
+        var run = run(); journal.create(repository, run);
+        journal.transition(repository, repositoryId, run.runId(), 0, RunState.CANCELLING, "test", "Cancelación solicitada");
+        var proof = new RunEntry(UUID.randomUUID(), RunEntry.Kind.EVIDENCE, 1, "Detención", Map.of(
+                "recordType", "STOP_CONFIRMATION", "stopped", "true", "runId", run.runId().toString(), "action", "CANCEL",
+                "revision", run.baseRevision(), "location", "artifacts/stop.txt", "sha256", "a".repeat(64)));
+        assertError(() -> journal.confirmStopped(repository, repositoryId, run.runId(), 1, proof, RunState.PAUSED, "test"), "STATE_PROOF_REQUIRED");
+        sql("CREATE TRIGGER reject_stop BEFORE INSERT ON run_events WHEN NEW.state='CANCELLED' BEGIN SELECT RAISE(ABORT, 'stop failure'); END");
+        assertThatThrownBy(() -> journal.confirmStopped(repository, repositoryId, run.runId(), 1, proof, RunState.CANCELLED, "test")).isInstanceOf(JournalException.class);
+        var unchanged = journal.inspect(repository, repositoryId, run.runId());
+        assertThat(unchanged.run().state()).isEqualTo(RunState.CANCELLING);
+        assertThat(unchanged.run().version()).isEqualTo(1);
+        assertThat(unchanged.entries()).isEmpty();
+        sql("DROP TRIGGER reject_stop");
+        journal.confirmStopped(repository, repositoryId, run.runId(), 1, proof, RunState.CANCELLED, "test");
+        assertThat(journal.inspect(repository, repositoryId, run.runId()).run().state()).isEqualTo(RunState.CANCELLED);
+    }
+
     private RunRecord run() {
         Instant now = Instant.parse("2026-10-24T00:00:00Z");
         return new RunRecord(UUID.randomUUID(), repositoryId, "carlos", "Petición original\nCon acentos: revisión.\n", "abc123",
